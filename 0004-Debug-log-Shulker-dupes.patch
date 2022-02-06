@@ -1,0 +1,41 @@
+From f0b0b9192c9d4f5e184bb900ecaee3055a3d9d4b Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Sun, 6 Feb 2022 07:55:45 +0100
+Subject: [PATCH 2/2] Debug log Shulker dupes
+
+---
+ .../net/minecraft/world/item/ItemStack.java    | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
+index 66f808cab..c9ce148d9 100644
+--- a/src/main/java/net/minecraft/world/item/ItemStack.java
++++ b/src/main/java/net/minecraft/world/item/ItemStack.java
+@@ -396,6 +396,24 @@ public final class ItemStack {
+                     if (this.getCount() == oldCount && Objects.equals(this.tag, oldData)) {
+                         this.setTag(newData);
+                         this.setCount(newCount);
++                    // Brokko start
++                    } else if(getItem().toString().contains("shulker")) {
++                        try {
++                            java.io.PrintWriter writer = new java.io.PrintWriter(new java.io.FileWriter("shulkerdupe.txt", true));
++                            writer.println(new java.util.Date() +" " + toString());
++                            writer.println(entityhuman.getBukkitEntity().getName());
++                            writer.println(this.getCount());
++                            writer.println(oldCount);
++                            writer.println();
++                            writer.println(this.tag);
++                            writer.println(oldData);
++                            writer.println();
++                            writer.println();
++                            writer.close();
++                        } catch(Exception e) {
++                            e.printStackTrace();
++                        }
++                    // Brokko end
+                     }
+ 
+                     for (Map.Entry<BlockPos, BlockEntity> e : world.capturedTileEntities.entrySet()) {
+-- 
+2.32.0.windows.1
+

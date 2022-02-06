@@ -1,0 +1,47 @@
+From bf3898a462ae42535263b3500d1825b79e018cf1 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Wed, 14 Jul 2021 01:33:18 +0200
+Subject: [PATCH] Do not drop glow berries if EntityChangeBlockEvent is
+ cancelled
+
+---
+ .../java/net/minecraft/world/level/block/CaveVines.java   | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/world/level/block/CaveVines.java b/src/main/java/net/minecraft/world/level/block/CaveVines.java
+index 4b9e0c620..e42375044 100644
+--- a/src/main/java/net/minecraft/world/level/block/CaveVines.java
++++ b/src/main/java/net/minecraft/world/level/block/CaveVines.java
+@@ -31,16 +31,17 @@ public interface CaveVines {
+     static InteractionResult harvest(BlockState iblockdata, Level world, BlockPos blockposition, Entity entity) {
+         if ((Boolean) iblockdata.getValue(CaveVines.BERRIES)) {
+             // CraftBukkit start
++            java.util.Collection<ItemStack> droppedItems = new java.util.ArrayList<>();
+             if (entity instanceof Player) {
+                 PlayerHarvestBlockEvent event = CraftEventFactory.callPlayerHarvestBlockEvent(world, blockposition, (Player) entity, Collections.singletonList(new ItemStack(Items.GLOW_BERRIES, 1)));
+                 if (event.isCancelled()) {
+                     return InteractionResult.SUCCESS; // We need to return a success either way, because making it PASS or FAIL will result in a bug where cancelling while harvesting w/ block in hand places block
+                 }
+                 for (org.bukkit.inventory.ItemStack itemStack : event.getItemsHarvested()) {
+-                    Block.popResource(world, blockposition, CraftItemStack.asNMSCopy(itemStack));
++                    droppedItems.add(CraftItemStack.asNMSCopy(itemStack));
+                 }
+             } else {
+-                Block.popResource(world, blockposition, new ItemStack(Items.GLOW_BERRIES, 1));
++                droppedItems.add(new ItemStack(Items.GLOW_BERRIES, 1));
+             }
+             // CraftBukkit end
+ 
+@@ -51,6 +52,9 @@ public interface CaveVines {
+             if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(entity, blockposition, (BlockState) iblockdata.setValue(CaveVines.BERRIES, false)).isCancelled()) {
+                 return InteractionResult.SUCCESS;
+             }
++            for (ItemStack itemStack : droppedItems) {
++                Block.popResource(world, blockposition, itemStack);
++            }
+             // CraftBukkit end
+             world.setBlock(blockposition, (BlockState) iblockdata.setValue(CaveVines.BERRIES, false), 2);
+             return InteractionResult.sidedSuccess(world.isClientSide);
+-- 
+2.32.0.windows.1
+

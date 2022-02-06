@@ -1,0 +1,102 @@
+From f6223424d4fb8cb0eb24349afdf6cab0a7a9ab66 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Sat, 11 Dec 2021 06:05:14 +0100
+Subject: [PATCH] Workaround for Client Lag Spikes (MC-162253)
+
+When crossing certain chunk boundaries, the client needlessly
+calculates light maps for chunk neighbours. In some specific map
+configurations, these calculations cause a 500ms+ freeze on the Client.
+
+This patch basically serves as a workaround by sending light maps
+to the client, so that it doesn't attempt to calculate them.
+This mitigates the frametime impact to a minimum (but it's still there).
+---
+ .../net/minecraft/server/level/ChunkMap.java  | 66 +++++++++++++++++++
+ 1 file changed, 66 insertions(+)
+
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index 0e474819c..b7455a036 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -2114,12 +2114,78 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+ 
+     }
+ 
++    // Paper start - Fix MC-162253
++    private static final BitSet lightMask(LevelChunk chunk) {
++        net.minecraft.world.level.chunk.LevelChunkSection[] sections = chunk.getSections();
++        BitSet mask = new BitSet(sections.length + 2); // One light section added above and below
++        for (int i = 0; i < sections.length; i++) {
++            if (!sections[i].hasOnlyAir()) {
++                // Whenever a section is not empty, it can potentially change lighting for the section itself, the section below and the section above
++                // Add one to account for the light section below min y
++                mask.set(i + 0);
++                mask.set(i + 1);
++                mask.set(i + 2);
++            }
++        }
++        return mask;
++    }
++
++    private static final BitSet ceilingLightMask(LevelChunk chunk) {
++        // It is similar to get highest bit, it would turn an 001010 into an 001111 so basically the highest bit and all below.
++        // We then invert this, so we'd have 110000 and compare that to the "main" chunk.
++        net.minecraft.world.level.chunk.LevelChunkSection[] sections = chunk.getSections();
++        for (int i = sections.length - 1; i >= 0; i--) {
++            if (!sections[i].hasOnlyAir()) {
++                int heighest = i + 3; // Add one to account for the light section below min y and one because blocks might change the light in the section above, and one because toIndex in BitSet is exclusive 
++                BitSet mask = new BitSet(heighest);
++                mask.set(0, heighest);
++                return mask;
++            }
++        }
++        return new BitSet();
++    }
++    // Paper end - Fix MC-162253
++
+     // Paper start - Anti-Xray - Bypass
+     private void playerLoadedChunk(ServerPlayer player, MutableObject<java.util.Map<Object, ClientboundLevelChunkWithLightPacket>> cachedDataPackets, LevelChunk chunk) {
+         if (cachedDataPackets.getValue() == null) {
+             cachedDataPackets.setValue(new java.util.HashMap<>());
+         }
+ 
++        // Paper start - Fix MC-162253
++        final int viewDistance = this.getEffectiveViewDistance(); // per player view distance: playerChunkManager.getData(player).getTargetSendViewDistance();
++        final int playerChunkX = (int) (player.getX() / 16);
++        final int playerChunkZ = (int) (player.getZ() / 16);
++
++        final BitSet lightMask = lightMask(chunk);
++        for (int x = -1; x <= 1; x++) {
++            for (int z = -1; z <= 1; z++) {
++                if (x == 0 && z == 0) {
++                    continue;
++                }
++
++                if (!chunk.isNeighbourLoaded(x, z)) {
++                    continue;
++                }
++
++                final int distX = Math.abs(playerChunkX - (chunk.getPos().x + x));
++                final int distZ = Math.abs(playerChunkZ - (chunk.getPos().z + z));
++                if (Math.max(distX, distZ) > viewDistance) {
++                    continue;
++                }
++
++                final LevelChunk neighbor = chunk.getRelativeNeighbourIfLoaded(x, z);
++                BitSet updateLightMask = (BitSet) lightMask.clone();
++                updateLightMask.andNot(ceilingLightMask(neighbor));
++                if (updateLightMask.isEmpty()) {
++                    continue;
++                }
++
++                player.connection.send(new net.minecraft.network.protocol.game.ClientboundLightUpdatePacket(new ChunkPos(chunk.getPos().x + x, chunk.getPos().z + z), lightEngine, updateLightMask, null, true));
++            }
++        }
++        // Paper end - Fix MC-162253
++
+         Boolean shouldModify = chunk.getLevel().chunkPacketBlockController.shouldModify(player, chunk);
+         player.trackChunk(chunk.getPos(), cachedDataPackets.getValue().computeIfAbsent(shouldModify, (s) -> {
+             return new ClientboundLevelChunkWithLightPacket(chunk, this.lightEngine, (BitSet) null, (BitSet) null, true, (Boolean) s);
+-- 
+2.32.0.windows.1
+

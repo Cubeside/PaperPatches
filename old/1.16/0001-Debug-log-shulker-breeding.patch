@@ -1,0 +1,35 @@
+From c7818519ee2fe8623a1009fea6f7da113d263552 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Sun, 1 Aug 2021 03:13:55 +0200
+Subject: [PATCH] Debug log shulker breeding
+
+---
+ src/main/java/net/minecraft/world/entity/monster/Shulker.java | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Shulker.java b/src/main/java/net/minecraft/world/entity/monster/Shulker.java
+index ca0d1c059..a6fc49e4e 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Shulker.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Shulker.java
+@@ -457,6 +457,7 @@ public class Shulker extends AbstractGolem implements Enemy {
+             return false;
+         } else {
+             if ((double) this.getHealth() < (double) this.getMaxHealth() * 0.5D && this.random.nextInt(4) == 0) {
++                System.out.println("Random 0");
+                 this.teleportSomewhere();
+             } else if (source.isProjectile()) {
+                 entity = source.getDirectEntity();
+@@ -480,8 +481,9 @@ public class Shulker extends AbstractGolem implements Enemy {
+         if (!this.isClosed() && this.teleportSomewhere()) {
+             int i = this.level.getEntities((EntityTypeTest) EntityType.SHULKER, axisalignedbb.inflate(8.0D), Entity::isAlive).size();
+             float f = (float) (i - 1) / 5.0F;
+-
++            System.out.println("Try Replicate " + i + " " + f);
+             if (this.level.random.nextFloat() >= f) {
++                System.out.println("Replicate");
+                 Shulker entityshulker = (Shulker) EntityType.SHULKER.create(this.level);
+                 DyeColor enumcolor = this.getColor();
+ 
+-- 
+2.32.0.windows.1
+

@@ -1,0 +1,70 @@
+From be4ee1d825aea9d3af19c1ae1c7fe522d5823cb9 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Fri, 2 Jul 2021 04:26:33 +0200
+Subject: [PATCH] Cubeside 1.17 changes
+
+---
+ .../java/net/minecraft/world/entity/Entity.java    | 10 ++++++++--
+ src/main/java/net/minecraft/world/entity/Mob.java  | 14 +++++++++-----
+ 2 files changed, 17 insertions(+), 7 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 4fd030ef9..25f9113c2 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -1634,6 +1634,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, n
+ 
+     public void playerTouch(Player player) {}
+ 
++    // Brokko start - pushable
++    private boolean isRealPushable() {
++        return !(this instanceof Mob) || !((Mob) this).isNoAi();
++    }
++    // Brokko end
++
+     public void push(Entity entity) {
+         if (!this.isPassengerOfSameVehicle(entity)) {
+             if (!entity.noPhysics && !this.noPhysics) {
+@@ -1656,11 +1662,11 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, n
+                     d1 *= d3;
+                     d0 *= 0.05000000074505806D;
+                     d1 *= 0.05000000074505806D;
+-                    if (!this.isVehicle()) {
++                    if (!this.isVehicle() && this.isRealPushable()) { //Brokko isPushable
+                         this.push(-d0, 0.0D, -d1);
+                     }
+ 
+-                    if (!entity.isVehicle()) {
++                    if (!entity.isVehicle() && entity.isRealPushable()) { //Brokko isPushable
+                         entity.push(d0, 0.0D, d1);
+                     }
+                 }
+diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
+index c4c5c35e3..59560184a 100644
+--- a/src/main/java/net/minecraft/world/entity/Mob.java
++++ b/src/main/java/net/minecraft/world/entity/Mob.java
+@@ -202,12 +202,16 @@ public abstract class Mob extends LivingEntity {
+     @Override
+     public void inactiveTick() {
+         super.inactiveTick();
+-        if (this.goalSelector.inactiveTick()) {
+-            this.goalSelector.tick();
+-        }
+-        if (this.targetSelector.inactiveTick()) {
+-            this.targetSelector.tick();
++        // Brokko start - isNoAi check
++        if (!this.isNoAi()) {
++            if (this.goalSelector.inactiveTick()) {
++                this.goalSelector.tick();
++            }
++            if (this.targetSelector.inactiveTick()) {
++                this.targetSelector.tick();
++            }
+         }
++        // Brokko end
+     }
+     // Paper end
+ 
+-- 
+2.32.0.windows.1
+

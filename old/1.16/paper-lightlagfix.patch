@@ -1,0 +1,142 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: MeFisto94 <MeFisto94@users.noreply.github.com>
+Date: Tue, 12 May 2020 23:02:43 +0200
+Subject: [PATCH] Workaround for Client Lag Spikes (MC-162253)
+
+When crossing certain chunk boundaries, the client needlessly
+calculates light maps for chunk neighbours. In some specific map
+configurations, these calculations cause a 500ms+ freeze on the Client.
+
+This patch basically serves as a workaround by sending light maps
+to the client, so that it doesn't attempt to calculate them.
+This mitigates the frametime impact to a minimum (but it's still there).
+
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index 943c187efab8fdbcc38c313a498f876983a98412..6a5e8e9e5c4a66db0a9c79043276c8fa0ca96fd1 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -2067,7 +2067,34 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     }
+ 
+     // Paper start
+-    private static int getLightMask(final LevelChunk chunk) {
++    private static final BitSet lightMask(LevelChunk chunk) {
++        net.minecraft.world.level.chunk.LevelChunkSection[] sections = chunk.getSections();
++        BitSet mask = new java.util.BitSet(sections.length + 2); // One light section added above and below
++        for (int i = 0; i < sections.length; i++) {
++            if (!net.minecraft.world.level.chunk.LevelChunkSection.isEmpty(sections[i])) {
++                mask.set(i + 1);
++            }
++        }
++        return mask;
++    }
++
++    // See getCeilingLightMask for the cursed explanation
++    private static final BitSet ceilingLightMask(LevelChunk chunk) {
++        net.minecraft.world.level.chunk.LevelChunkSection[] sections = chunk.getSections();
++        for (int i = sections.length - 1; i >= 0; i--) {
++            if (!net.minecraft.world.level.chunk.LevelChunkSection.isEmpty(sections[i])) {
++                int heighest = i + 1; // Add one to account for the light section below min y
++                java.util.BitSet mask = new java.util.BitSet(heighest);
++                mask.set(0, heighest);
++                return mask;
++            }
++        }
++        return null;
++    }
++    // Paper end
++
++    // Paper start
++    @Deprecated private static int getLightMask(final LevelChunk chunk) { //TODO ???
+         final net.minecraft.world.level.chunk.LevelChunkSection[] chunkSections = chunk.getSections();
+         int mask = 0;
+ 
+@@ -2085,7 +2112,7 @@ Sections go from 0..16. Now whenever a section is not empty, it can potentially
+         return mask;
+     }
+ 
+-    private static int getCeilingLightMask(final LevelChunk chunk) {
++    @Deprecated private static int getCeilingLightMask(final LevelChunk chunk) { //TODO ???
+         int mask = getLightMask(chunk);
+ 
+         /*
+@@ -2109,8 +2136,66 @@ Sections go from 0..16. Now whenever a section is not empty, it can potentially
+ 
+     public void playerLoadedChunk(ServerPlayer player, Packet<?>[] packets, LevelChunk chunk) { // Paper - private -> public
+         if (packets[0] == null) {
++            // Paper start - add 8 for light fix workaround
++            if (packets.length != 10) { // in case Plugins call sendChunk, resize
++                packets = new Packet[10];
++            }
++            // Paper end
+             packets[0] = new ClientboundLevelChunkPacket(chunk, chunk.level.chunkPacketBlockController.shouldModify(player, chunk)); // Paper - Ani-Xray - Bypass
+             packets[1] = new ClientboundLightUpdatePacket(chunk.getPos(), this.lightEngine, (BitSet) null, (BitSet) null, true);
++
++            // Paper start - Fix MC-162253
++            final BitSet lightMask = lightMask(chunk);
++            int i = 1;
++            for (int x = -1; x <= 1; x++) {
++                for (int z = -1; z <= 1; z++) {
++                    if (x == 0 && z == 0) {
++                        continue;
++                    }
++
++                    ++i;
++
++                    if (!chunk.isNeighbourLoaded(x, z)) {
++                        continue;
++                    }
++
++                    final LevelChunk neighbor = chunk.getRelativeNeighbourIfLoaded(x, z);
++                    lightMask.andNot(ceilingLightMask(neighbor));
++                    if (lightMask.isEmpty()) {
++                        continue;
++                    }
++
++                    packets[i] = new ClientboundLightUpdatePacket(new ChunkPos(chunk.getPos().x + x, chunk.getPos().z + z), lightEngine, lightMask, null, true);
++                }
++            }
++        }
++
++        final int viewDistance = playerViewDistanceBroadcastMap.getLastViewDistance(player);
++        final long lastPosition = playerViewDistanceBroadcastMap.getLastCoordinate(player);
++
++        int j = 1;
++        for (int x = -1; x <= 1; x++) {
++            for (int z = -1; z <= 1; z++) {
++                if (x == 0 && z == 0) {
++                    continue;
++                }
++
++                ++j;
++
++                Packet<?> packet = packets[j];
++                if (packet == null) {
++                    continue;
++                }
++
++                final int distX = Math.abs(MCUtil.getCoordinateX(lastPosition) - (chunk.getPos().x + x));
++                final int distZ = Math.abs(MCUtil.getCoordinateZ(lastPosition) - (chunk.getPos().z + z));
++
++                if (Math.max(distX, distZ) > viewDistance) {
++                    continue;
++                }
++                player.connection.send(packet);
++            }
++            // Paper end
+         }
+ 
+         player.trackChunk(chunk.getPos(), packets[0], packets[1]);
+diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+index 6d7c90b3f41a2e5a1514fa32e1e088f5be9cb90d..7eb353a39407263c8a8c18bd3afc4c275ef07d3d 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
++++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -269,7 +269,7 @@ public class LevelChunk implements ChunkAccess {
+ 
+                     // broadcast
+                     Object[] backingSet = inRange.getBackingSet();
+-                    Packet[] chunkPackets = new Packet[2];
++                    Packet[] chunkPackets = new Packet[10];
+                     for (int index = 0, len = backingSet.length; index < len; ++index) {
+                         Object temp = backingSet[index];
+                         if (!(temp instanceof net.minecraft.server.level.ServerPlayer)) {

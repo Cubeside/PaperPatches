@@ -1,0 +1,137 @@
+From 08c1f07375eb443c0ad397c43f0b135735eb13b2 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Mon, 20 Dec 2021 04:29:56 +0100
+Subject: [PATCH] Cubeside - add configurable water animal spawn height
+
+---
+ .../destroystokyo/paper/PaperWorldConfig.java | 18 ++++
+ .../world/entity/animal/WaterAnimal.java      | 88 +++++++++++++++++++
+ 2 files changed, 106 insertions(+)
+ create mode 100644 src/main/java/net/minecraft/world/entity/animal/WaterAnimal.java
+
+diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
+index d71cd626b..35e75e074 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
++++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
+@@ -385,6 +385,24 @@ public class PaperWorldConfig {
+         mobSpawnerTickRate = getInt("mob-spawner-tick-rate", 1);
+     }
+ 
++    public Integer waterAnimalMaxSpawnHeight;
++    private void waterAnimalMaxSpawnHeight() {
++        String v = getString("wateranimal-spawn-height.maximum", "default");
++        try {
++            waterAnimalMaxSpawnHeight = Integer.parseInt(v);
++        } catch (NumberFormatException ignored) {
++        }
++    }
++
++    public Integer waterAnimalMinSpawnHeight;
++    private void waterAnimalMinSpawnHeight() {
++        String v = getString("wateranimal-spawn-height.minimum", "default");
++        try {
++            waterAnimalMinSpawnHeight = Integer.parseInt(v);
++        } catch (NumberFormatException ignored) {
++        }
++    }
++
+     public int containerUpdateTickRate;
+     private void containerUpdateTickRate() {
+         containerUpdateTickRate = getInt("container-update-tick-rate", 1);
+diff --git a/src/main/java/net/minecraft/world/entity/animal/WaterAnimal.java b/src/main/java/net/minecraft/world/entity/animal/WaterAnimal.java
+new file mode 100644
+index 000000000..c3bba52a5
+--- /dev/null
++++ b/src/main/java/net/minecraft/world/entity/animal/WaterAnimal.java
+@@ -0,0 +1,88 @@
++package net.minecraft.world.entity.animal;
++
++import java.util.Random;
++import net.minecraft.core.BlockPos;
++import net.minecraft.tags.FluidTags;
++import net.minecraft.world.damagesource.DamageSource;
++import net.minecraft.world.entity.EntityType;
++import net.minecraft.world.entity.MobSpawnType;
++import net.minecraft.world.entity.MobType;
++import net.minecraft.world.entity.PathfinderMob;
++import net.minecraft.world.entity.player.Player;
++import net.minecraft.world.level.Level;
++import net.minecraft.world.level.LevelAccessor;
++import net.minecraft.world.level.LevelReader;
++import net.minecraft.world.level.block.Blocks;
++import net.minecraft.world.level.pathfinder.BlockPathTypes;
++
++public abstract class WaterAnimal extends PathfinderMob {
++    protected WaterAnimal(EntityType<? extends WaterAnimal> type, Level world) {
++        super(type, world);
++        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
++    }
++
++    @Override
++    public boolean canBreatheUnderwater() {
++        return true;
++    }
++
++    @Override
++    public MobType getMobType() {
++        return MobType.WATER;
++    }
++
++    @Override
++    public boolean checkSpawnObstruction(LevelReader world) {
++        return world.isUnobstructed(this);
++    }
++
++    @Override
++    public int getAmbientSoundInterval() {
++        return 120;
++    }
++
++    @Override
++    protected int getExperienceReward(Player player) {
++        return 1 + this.level.random.nextInt(3);
++    }
++
++    protected void handleAirSupply(int air) {
++        if (this.isAlive() && !this.isInWaterOrBubble()) {
++            this.setAirSupply(air - 1);
++            if (this.getAirSupply() == -20) {
++                this.setAirSupply(0);
++                this.hurt(DamageSource.DROWN, 2.0F);
++            }
++        } else {
++            this.setAirSupply(300);
++        }
++
++    }
++
++    @Override
++    public void baseTick() {
++        int i = this.getAirSupply();
++        super.baseTick();
++        this.handleAirSupply(i);
++    }
++
++    @Override
++    public boolean isPushedByFluid() {
++        return false;
++    }
++
++    @Override
++    public boolean canBeLeashed(Player player) {
++        return false;
++    }
++
++    public static boolean checkSurfaceWaterAnimalSpawnRules(EntityType<? extends WaterAnimal> type, LevelAccessor world, MobSpawnType reason, BlockPos pos, Random random) {
++        int i = world.getSeaLevel();
++        int j = i - 13;
++        // Paper start
++        i = world.getMinecraftWorld().paperConfig.waterAnimalMaxSpawnHeight != null ? world.getMinecraftWorld().paperConfig.waterAnimalMaxSpawnHeight : i;
++        j = world.getMinecraftWorld().paperConfig.waterAnimalMinSpawnHeight != null ? world.getMinecraftWorld().paperConfig.waterAnimalMinSpawnHeight : j;
++        // Paper end
++        return world.getFluidState(pos.below()).is(FluidTags.WATER) && world.getBlockState(pos.above()).is(Blocks.WATER) && pos.getY() >= j && pos.getY() <= i;
++    }
++}
+-- 
+2.32.0.windows.1
+
