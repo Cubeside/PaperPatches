@@ -1,12 +1,11 @@
-From b062980c48ec81b682044850593e6fc88c9556f2 Mon Sep 17 00:00:00 2001
+From 3af7f5262c7a884f233626b7b6b9d02dc4a3b86d Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Thu, 10 Mar 2022 06:29:33 +0100
 Subject: [PATCH] Fix shulker dupe
 
 ---
  .../java/net/minecraft/world/item/ItemStack.java  | 15 +++++++++++++++
- .../inventory/CraftMetaBlockState.java            |  6 +++---
- 2 files changed, 18 insertions(+), 3 deletions(-)
+ 1 file changed, 15 insertions(+)
 
 diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
 index dc4639f90..bbd2c8844 100644
@@ -34,33 +33,6 @@ index dc4639f90..bbd2c8844 100644
              int oldCount = this.getCount();
              ServerLevel world = (ServerLevel) itemactioncontext.getLevel();
  
-diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
-index 55dd618d8..b3cd8550a 100644
---- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
-+++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
-@@ -218,7 +218,7 @@ public class CraftMetaBlockState extends CraftMetaItem implements BlockStateMeta
-         if (this.blockEntityTag != null) {
-             switch (this.material) {
-                 case SHIELD:
--                    this.blockEntityTag.putString("id", "banner");
-+                    this.blockEntityTag.putString("id", "minecraft:banner");
-                     break;
-                 case SHULKER_BOX:
-                 case WHITE_SHULKER_BOX:
-@@ -237,11 +237,11 @@ public class CraftMetaBlockState extends CraftMetaItem implements BlockStateMeta
-                 case GREEN_SHULKER_BOX:
-                 case RED_SHULKER_BOX:
-                 case BLACK_SHULKER_BOX:
--                    this.blockEntityTag.putString("id", "shulker_box");
-+                    this.blockEntityTag.putString("id", "minecraft:shulker_box");
-                     break;
-                 case BEE_NEST:
-                 case BEEHIVE:
--                    this.blockEntityTag.putString("id", "beehive");
-+                    this.blockEntityTag.putString("id", "minecraft:beehive");
-                     break;
-             }
-         }
 -- 
 2.32.0.windows.1
 
