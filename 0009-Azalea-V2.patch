@@ -1,0 +1,67 @@
+From b2534b35bf12555462c97bfba00c257f5f5d5277 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Thu, 23 Jun 2022 08:02:26 +0200
+Subject: [PATCH] Azalea V2
+
+---
+ .../world/level/block/AzaleaBlock.java        | 48 +++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+ create mode 100644 src/main/java/net/minecraft/world/level/block/AzaleaBlock.java
+
+diff --git a/src/main/java/net/minecraft/world/level/block/AzaleaBlock.java b/src/main/java/net/minecraft/world/level/block/AzaleaBlock.java
+new file mode 100644
+index 000000000..f07be6595
+--- /dev/null
++++ b/src/main/java/net/minecraft/world/level/block/AzaleaBlock.java
+@@ -0,0 +1,48 @@
++package net.minecraft.world.level.block;
++
++import net.minecraft.core.BlockPos;
++import net.minecraft.server.level.ServerLevel;
++import net.minecraft.util.RandomSource;
++import net.minecraft.world.level.BlockGetter;
++import net.minecraft.world.level.Level;
++import net.minecraft.world.level.block.grower.AzaleaTreeGrower;
++import net.minecraft.world.level.block.state.BlockBehaviour;
++import net.minecraft.world.level.block.state.BlockState;
++import net.minecraft.world.phys.shapes.CollisionContext;
++import net.minecraft.world.phys.shapes.Shapes;
++import net.minecraft.world.phys.shapes.VoxelShape;
++
++public class AzaleaBlock extends BushBlock implements BonemealableBlock {
++    private static final AzaleaTreeGrower TREE_GROWER = new AzaleaTreeGrower();
++    // private static final VoxelShape SHAPE = Shapes.or(Block.box(0.0D, 8.0D, 0.0D, 16.0D, 16.0D, 16.0D), Block.box(6.0D, 0.0D, 6.0D, 10.0D, 8.0D, 10.0D));
++    private static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D); // Brokko
++
++    protected AzaleaBlock(BlockBehaviour.Properties settings) {
++        super(settings);
++    }
++
++    @Override
++    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
++        return SHAPE;
++    }
++
++    @Override
++    protected boolean mayPlaceOn(BlockState floor, BlockGetter world, BlockPos pos) {
++        return floor.is(Blocks.CLAY) || super.mayPlaceOn(floor, world, pos);
++    }
++
++    @Override
++    public boolean isValidBonemealTarget(BlockGetter world, BlockPos pos, BlockState state, boolean isClient) {
++        return world.getFluidState(pos.above()).isEmpty();
++    }
++
++    @Override
++    public boolean isBonemealSuccess(Level world, RandomSource random, BlockPos pos, BlockState state) {
++        return world.random.nextFloat() < 0.45D; // Brokko - decompile fix
++    }
++
++    @Override
++    public void performBonemeal(ServerLevel world, RandomSource random, BlockPos pos, BlockState state) {
++        TREE_GROWER.growTree(world, world.getChunkSource().getGenerator(), pos, state, random);
++    }
++}
+-- 
+2.32.0.windows.1
+
