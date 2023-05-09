@@ -1,14 +1,14 @@
-From 56064eb5c72d8380e194ab05ecb4476f57a134c9 Mon Sep 17 00:00:00 2001
+From 893cf149cfdbe381f94dca3264193356808748c2 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Tue, 9 May 2023 05:44:43 +0200
 Subject: [PATCH] Save empty enchantment
 
 ---
- .../craftbukkit/inventory/CraftMetaItem.java  | 33 +++++++++++++++++--
- 1 file changed, 30 insertions(+), 3 deletions(-)
+ .../craftbukkit/inventory/CraftMetaItem.java  | 35 ++++++++++++++++---
+ 1 file changed, 31 insertions(+), 4 deletions(-)
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index 58c1d07f4..9d05b047e 100644
+index 58c1d07f4..db4e3e1a6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 @@ -322,7 +322,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
@@ -59,6 +59,15 @@ index 58c1d07f4..9d05b047e 100644
              }
              if (this.hasAttributeModifiers()) {
                  clone.attributeModifiers = LinkedHashMultimap.create(this.attributeModifiers);
+@@ -1504,7 +1513,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+     }
+ 
+     static void serializeEnchantments(Map<Enchantment, Integer> enchantments, ImmutableMap.Builder<String, Object> builder, ItemMetaKey key) {
+-        if (enchantments == null || enchantments.isEmpty()) {
++        if (enchantments == null || (enchantments.isEmpty() && !(enchantments instanceof EnchantmentMap && ((EnchantmentMap)enchantments).hasEmptyEnchamentment()))) { // Brokko
+             return;
+         }
+ 
 @@ -1512,6 +1521,11 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
          for (Map.Entry<? extends Enchantment, Integer> enchant : enchantments.entrySet()) {
              enchants.put(enchant.getKey().getName(), enchant.getValue());
