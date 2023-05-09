@@ -1,0 +1,86 @@
+From 6734c7f0d1e873c5ae900fc2a398055fca681126 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Tue, 9 May 2023 05:44:43 +0200
+Subject: [PATCH] Save empty enchantment
+
+---
+ .../craftbukkit/inventory/CraftMetaItem.java  | 26 ++++++++++++++++---
+ 1 file changed, 23 insertions(+), 3 deletions(-)
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+index 58c1d07f4..090ff1178 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+@@ -322,7 +322,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+         this.blockData = meta.blockData;
+ 
+         if (meta.enchantments != null) { // Spigot
+-            this.enchantments = new EnchantmentMap(meta.enchantments); // Paper
++            this.enchantments = new EnchantmentMap(meta.enchantments, meta.enchantments.hasEmptyEnchamentment()); // Paper // Brokko
+         }
+ 
+         if (meta.hasAttributeModifiers()) {
+@@ -454,6 +454,8 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+             Enchantment enchant = Enchantment.getByKey(CraftNamespacedKey.fromStringOrNull(id));
+             if (enchant != null) {
+                 enchantments.put(enchant, level);
++            } else { // Brokko
++                enchantments.setHasEmptyEnchamentment(true); // Brokko
+             }
+         }
+ 
+@@ -801,6 +803,11 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+ 
+             list.add(subtag);
+         }
++        // Brokko start
++        if (enchantments instanceof EnchantmentMap && ((EnchantmentMap)enchantments).hasEmptyEnchamentment()) {
++            list.add(new CompoundTag());
++        }
++        // Brokko end
+ 
+         tag.put(key.NBT, list);
+     }
+@@ -1381,7 +1388,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+             clone.customModelData = this.customModelData;
+             clone.blockData = this.blockData;
+             if (this.enchantments != null) {
+-                clone.enchantments = new EnchantmentMap(this.enchantments); // Paper
++                clone.enchantments = new EnchantmentMap(this.enchantments, this.enchantments.hasEmptyEnchamentment()); // Paper // Brokko
+             }
+             if (this.hasAttributeModifiers()) {
+                 clone.attributeModifiers = LinkedHashMultimap.create(this.attributeModifiers);
+@@ -1660,9 +1667,12 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+ 
+     // Paper start
+     private static class EnchantmentMap extends TreeMap<Enchantment, Integer> {
+-        private EnchantmentMap(Map<Enchantment, Integer> enchantments) {
++        private boolean hasEmptyEnchamentment; // Brokko
++
++        private EnchantmentMap(Map<Enchantment, Integer> enchantments, boolean hasEmptyEnchamentment) {  // Brokko hasEmptyEnchamentment
+             this();
+             putAll(enchantments);
++            this.hasEmptyEnchamentment = hasEmptyEnchamentment; // Brokko
+         }
+ 
+         private EnchantmentMap() {
+@@ -1672,6 +1682,16 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+         public EnchantmentMap clone() {
+             return (EnchantmentMap) super.clone();
+         }
++
++        // Brokko start
++        public boolean hasEmptyEnchamentment() {
++            return hasEmptyEnchamentment;
++        }
++
++        public void setHasEmptyEnchamentment(boolean b) {
++            hasEmptyEnchamentment = b;
++        }
++        // Brokko end
+     }
+     // Paper end
+ 
+-- 
+2.32.0.windows.1
+
