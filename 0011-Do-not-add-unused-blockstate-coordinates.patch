@@ -1,0 +1,28 @@
+From 41beaab9b9316e41420bab1aebe1adca881a1ab8 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Fri, 29 Jul 2022 00:38:15 +0200
+Subject: [PATCH] Do not add unused blockstate coordinates
+
+---
+ .../bukkit/craftbukkit/inventory/CraftMetaBlockState.java    | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
+index 3a8ff15d1..acd9f00cd 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
+@@ -263,6 +263,11 @@ public class CraftMetaBlockState extends CraftMetaItem implements BlockStateMeta
+         Validate.isTrue(blockStateType == blockState.getClass() && blockState instanceof CraftBlockEntityState, "Invalid blockState for " + this.material);
+ 
+         this.blockEntityTag = ((CraftBlockEntityState) blockState).getSnapshotNBT();
++        // Brokko start - remove coordinates
++        this.blockEntityTag.remove("x");
++        this.blockEntityTag.remove("y");
++        this.blockEntityTag.remove("z");
++        // Brokko end
+         // Set shield base
+         if (this.material == Material.SHIELD) {
+             this.blockEntityTag.putInt(CraftMetaBanner.BASE.NBT, ((CraftBanner) blockState).getBaseColor().getWoolData());
+-- 
+2.30.2
+
