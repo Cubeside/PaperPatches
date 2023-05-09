@@ -1,14 +1,14 @@
-From 6734c7f0d1e873c5ae900fc2a398055fca681126 Mon Sep 17 00:00:00 2001
+From 56064eb5c72d8380e194ab05ecb4476f57a134c9 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Tue, 9 May 2023 05:44:43 +0200
 Subject: [PATCH] Save empty enchantment
 
 ---
- .../craftbukkit/inventory/CraftMetaItem.java  | 26 ++++++++++++++++---
- 1 file changed, 23 insertions(+), 3 deletions(-)
+ .../craftbukkit/inventory/CraftMetaItem.java  | 33 +++++++++++++++++--
+ 1 file changed, 30 insertions(+), 3 deletions(-)
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index 58c1d07f4..090ff1178 100644
+index 58c1d07f4..9d05b047e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 @@ -322,7 +322,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
@@ -29,7 +29,16 @@ index 58c1d07f4..090ff1178 100644
              }
          }
  
-@@ -801,6 +803,11 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -643,6 +645,8 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+             Enchantment enchantment = Enchantment.getByName(enchantKey);
+             if ((enchantment != null) && (entry.getValue() instanceof Integer)) {
+                 enchantments.put(enchantment, (Integer) entry.getValue());
++            } else { // Brokko
++                enchantments.setHasEmptyEnchamentment(true); // Brokko
+             }
+         }
+ 
+@@ -801,6 +805,11 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
  
              list.add(subtag);
          }
@@ -41,7 +50,7 @@ index 58c1d07f4..090ff1178 100644
  
          tag.put(key.NBT, list);
      }
-@@ -1381,7 +1388,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -1381,7 +1390,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
              clone.customModelData = this.customModelData;
              clone.blockData = this.blockData;
              if (this.enchantments != null) {
@@ -50,7 +59,19 @@ index 58c1d07f4..090ff1178 100644
              }
              if (this.hasAttributeModifiers()) {
                  clone.attributeModifiers = LinkedHashMultimap.create(this.attributeModifiers);
-@@ -1660,9 +1667,12 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -1512,6 +1521,11 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+         for (Map.Entry<? extends Enchantment, Integer> enchant : enchantments.entrySet()) {
+             enchants.put(enchant.getKey().getName(), enchant.getValue());
+         }
++        // Brokko start
++        if (enchantments instanceof EnchantmentMap && ((EnchantmentMap)enchantments).hasEmptyEnchamentment()) {
++            enchants.put("unknownemptyenchantment", 1);
++        }
++        // Brokko end
+ 
+         builder.put(key.BUKKIT, enchants.build());
+     }
+@@ -1660,9 +1674,12 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
  
      // Paper start
      private static class EnchantmentMap extends TreeMap<Enchantment, Integer> {
@@ -64,7 +85,7 @@ index 58c1d07f4..090ff1178 100644
          }
  
          private EnchantmentMap() {
-@@ -1672,6 +1682,16 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -1672,6 +1689,16 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
          public EnchantmentMap clone() {
              return (EnchantmentMap) super.clone();
          }
