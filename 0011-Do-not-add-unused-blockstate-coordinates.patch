@@ -1,4 +1,4 @@
-From 41beaab9b9316e41420bab1aebe1adca881a1ab8 Mon Sep 17 00:00:00 2001
+From 616304f12d45961d3871adb09fc016a20e89a47f Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Fri, 29 Jul 2022 00:38:15 +0200
 Subject: [PATCH] Do not add unused blockstate coordinates
@@ -8,11 +8,11 @@ Subject: [PATCH] Do not add unused blockstate coordinates
  1 file changed, 5 insertions(+)
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
-index 3a8ff15d1..acd9f00cd 100644
+index 601cce5f1..9d5aad794 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
-@@ -263,6 +263,11 @@ public class CraftMetaBlockState extends CraftMetaItem implements BlockStateMeta
-         Validate.isTrue(blockStateType == blockState.getClass() && blockState instanceof CraftBlockEntityState, "Invalid blockState for " + this.material);
+@@ -281,6 +281,11 @@ public class CraftMetaBlockState extends CraftMetaItem implements BlockStateMeta
+         Preconditions.checkArgument(blockStateType == blockState.getClass() && blockState instanceof CraftBlockEntityState, "Invalid blockState for " + this.material);
  
          this.blockEntityTag = ((CraftBlockEntityState) blockState).getSnapshotNBT();
 +        // Brokko start - remove coordinates
@@ -24,5 +24,5 @@ index 3a8ff15d1..acd9f00cd 100644
          if (this.material == Material.SHIELD) {
              this.blockEntityTag.putInt(CraftMetaBanner.BASE.NBT, ((CraftBanner) blockState).getBaseColor().getWoolData());
 -- 
-2.30.2
+2.32.0.windows.1
 
