@@ -1,17 +1,17 @@
-From d7a86fb51806844e009e188b96689f41828938d9 Mon Sep 17 00:00:00 2001
+From aa66c5338abe33588a2a4ef869c39925a6ca1ffc Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Thu, 10 Mar 2022 06:29:33 +0100
-Subject: [PATCH 4/5] Fix shulker dupe
+Subject: [PATCH] Fix shulker dupe
 
 ---
  .../java/net/minecraft/world/item/ItemStack.java  | 15 +++++++++++++++
  1 file changed, 15 insertions(+)
 
 diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
-index a2585865a..cda7b5bfe 100644
+index ae9b821d7..986d22fe0 100644
 --- a/src/main/java/net/minecraft/world/item/ItemStack.java
 +++ b/src/main/java/net/minecraft/world/item/ItemStack.java
-@@ -334,6 +334,21 @@ public final class ItemStack {
+@@ -349,6 +349,21 @@ public final class ItemStack {
          } else {
              // CraftBukkit start - handle all block place event logic here
              CompoundTag oldData = this.getTagClone();
@@ -31,7 +31,7 @@ index a2585865a..cda7b5bfe 100644
 +            }
 +            // Brokko end
              int oldCount = this.getCount();
-             ServerLevel world = (ServerLevel) itemactioncontext.getLevel();
+             ServerLevel world = (ServerLevel) context.getLevel();
  
 -- 
 2.32.0.windows.1
