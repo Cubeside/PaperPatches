@@ -1,6 +1,6 @@
-From aa66c5338abe33588a2a4ef869c39925a6ca1ffc Mon Sep 17 00:00:00 2001
+From aa4ec28030aa98d74b512204984a88cc5306e3f8 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
-Date: Thu, 10 Mar 2022 06:29:33 +0100
+Date: Mon, 25 Sep 2023 05:35:50 +0200
 Subject: [PATCH] Fix shulker dupe
 
 ---
@@ -8,11 +8,11 @@ Subject: [PATCH] Fix shulker dupe
  1 file changed, 15 insertions(+)
 
 diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
-index ae9b821d7..986d22fe0 100644
+index 4697df75f..78964554f 100644
 --- a/src/main/java/net/minecraft/world/item/ItemStack.java
 +++ b/src/main/java/net/minecraft/world/item/ItemStack.java
-@@ -349,6 +349,21 @@ public final class ItemStack {
-         } else {
+@@ -355,6 +355,21 @@ public final class ItemStack {
+             Item item = this.getItem();
              // CraftBukkit start - handle all block place event logic here
              CompoundTag oldData = this.getTagClone();
 +            // Brokko start
