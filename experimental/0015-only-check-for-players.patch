@@ -1,0 +1,25 @@
+From a39bf5d0719827e1885be395479394139db706e2 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Fri, 20 Oct 2023 22:21:51 +0200
+Subject: [PATCH] only check for players
+
+---
+ src/main/java/net/minecraft/server/level/ChunkMap.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index 0c2617574..5af43fb0a 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -1302,7 +1302,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+                 // Paper end - check Y
+ 
+                 // CraftBukkit start - respect vanish API
+-                if (!player.getBukkitEntity().canSee(this.entity.getBukkitEntity())) {
++                if (flag && (this.entity instanceof ServerPlayer) && !player.getBukkitEntity().canSee(this.entity.getBukkitEntity())) { // Brokko
+                     flag = false;
+                 }
+                 // CraftBukkit end
+-- 
+2.32.0.windows.1
+
