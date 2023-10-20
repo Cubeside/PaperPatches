@@ -1,0 +1,25 @@
+From 5cdae65b808d3f2f1118c732b93d7b342707f036 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Fri, 20 Oct 2023 05:10:51 +0200
+Subject: [PATCH] Paper does not want to update..
+
+---
+ .../java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java    | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+index aeca803cc..714bcfffa 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+@@ -544,7 +544,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+             this.setCustomModelData(customModelData);
+         }
+ 
+-        Map blockData = SerializableMeta.getObject(Map.class, map, BLOCK_DATA.BUKKIT, true);
++        Object blockData = SerializableMeta.getObject(Object.class, map, BLOCK_DATA.BUKKIT, true);
+         if (blockData != null) {
+             this.blockData = (CompoundTag) CraftNBTTagConfigSerializer.deserialize(blockData);
+         }
+-- 
+2.32.0.windows.1
+
