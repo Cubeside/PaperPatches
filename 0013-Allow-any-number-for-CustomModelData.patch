@@ -1,4 +1,4 @@
-From 87884cdb1da30609cf088d497bfcfab74238586b Mon Sep 17 00:00:00 2001
+From f3bb1144869c937504270949e09036845694b0f9 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Mon, 15 May 2023 22:50:30 +0200
 Subject: [PATCH] Allow any number for CustomModelData
@@ -8,18 +8,18 @@ Subject: [PATCH] Allow any number for CustomModelData
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index db4e3e1a6..675fe16fe 100644
+index 9105c420c..0cd3dbe19 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-@@ -375,7 +375,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -380,7 +380,7 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
              }
          }
  
--        if (tag.contains(CUSTOM_MODEL_DATA.NBT, CraftMagicNumbers.NBT.TAG_INT)) {
-+        if (tag.contains(CUSTOM_MODEL_DATA.NBT, CraftMagicNumbers.NBT.TAG_ANY_NUMBER)) { // Brokko
-             this.customModelData = tag.getInt(CUSTOM_MODEL_DATA.NBT);
+-        if (tag.contains(CraftMetaItem.CUSTOM_MODEL_DATA.NBT, CraftMagicNumbers.NBT.TAG_INT)) {
++        if (tag.contains(CraftMetaItem.CUSTOM_MODEL_DATA.NBT, CraftMagicNumbers.NBT.TAG_ANY_NUMBER)) { // Brokko
+             this.customModelData = tag.getInt(CraftMetaItem.CUSTOM_MODEL_DATA.NBT);
          }
-         if (tag.contains(BLOCK_DATA.NBT, CraftMagicNumbers.NBT.TAG_COMPOUND)) {
+         if (tag.contains(CraftMetaItem.BLOCK_DATA.NBT, CraftMagicNumbers.NBT.TAG_COMPOUND)) {
 -- 
 2.32.0.windows.1
 
