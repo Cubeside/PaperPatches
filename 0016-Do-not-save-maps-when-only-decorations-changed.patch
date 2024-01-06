@@ -1,0 +1,127 @@
+From b93598eb86698fbce52747c32622bd25ed0fc298 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Fri, 29 Dec 2023 08:32:50 +0100
+Subject: [PATCH] Do not save maps when only decorations changed
+
+---
+ .../level/saveddata/maps/MapItemSavedData.java      | 13 +++++++++++--
+ .../org/bukkit/craftbukkit/map/CraftMapView.java    |  7 +++++++
+ 2 files changed, 18 insertions(+), 2 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
+index e4c4948e0..013d4c762 100644
+--- a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
++++ b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
+@@ -304,7 +304,12 @@ public class MapItemSavedData extends SavedData {
+ 
+             if (this.decorations.size() < player.level().paperConfig().maps.itemFrameCursorLimit) { // Paper
+             this.addDecoration(MapDecoration.Type.FRAME, player.level(), "frame-" + entityitemframe.getId(), (double) blockposition.getX(), (double) blockposition.getZ(), (double) (entityitemframe.getDirection().get2DDataValue() * 90), (Component) null);
+-            this.frameMarkers.put(worldmapframe1.getId(), worldmapframe1);
++            // Brokko start - mark dirty if mapframe changed
++            MapFrame oldFrame = this.frameMarkers.put(worldmapframe1.getId(), worldmapframe1);
++            if (oldFrame == null || oldFrame.getEntityId() != worldmapframe1.getEntityId() || oldFrame.getRotation() != worldmapframe1.getRotation()) {
++                setDirty();
++            }
++            // Brokko end
+             } // Paper
+         }
+ 
+@@ -451,7 +456,7 @@ public class MapItemSavedData extends SavedData {
+     }
+ 
+     public void setDecorationsDirty() {
+-        this.setDirty();
++        // this.setDirty(); // Brokko - No need to set dirty, decorations are not persisted
+         this.carriedBy.forEach(MapItemSavedData.HoldingPlayer::markDecorationsDirty);
+     }
+ 
+@@ -483,11 +488,13 @@ public class MapItemSavedData extends SavedData {
+             }
+ 
+             if (this.bannerMarkers.remove(mapiconbanner.getId(), mapiconbanner)) {
++                setDirty(); // Brokko
+                 this.removeDecoration(mapiconbanner.getId());
+                 return true;
+             }
+ 
+             if (!this.isTrackedCountOverLimit(((Level) world).paperConfig().maps.itemFrameCursorLimit)) { // Paper
++                setDirty(); // Brokko
+                 this.bannerMarkers.put(mapiconbanner.getId(), mapiconbanner);
+                 this.addDecoration(mapiconbanner.getDecoration(), world, mapiconbanner.getId(), d0, d1, 180.0D, mapiconbanner.getName());
+                 return true;
+@@ -508,6 +515,7 @@ public class MapItemSavedData extends SavedData {
+ 
+                 if (!mapiconbanner.equals(mapiconbanner1)) {
+                     iterator.remove();
++                    setDirty(); // Brokko
+                     this.removeDecoration(mapiconbanner.getId());
+                 }
+             }
+@@ -522,6 +530,7 @@ public class MapItemSavedData extends SavedData {
+     public void removedFromFrame(BlockPos pos, int id) {
+         this.removeDecoration("frame-" + id);
+         this.frameMarkers.remove(MapFrame.frameId(pos));
++        setDirty(); // Brokko
+     }
+ 
+     public boolean updateColor(int x, int z, byte color) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java b/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java
+index c3266c43a..fffd2aca3 100644
+--- a/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java
++++ b/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java
+@@ -54,6 +54,7 @@ public final class CraftMapView implements MapView {
+     @Override
+     public void setScale(Scale scale) {
+         this.worldMap.scale = scale.getValue();
++        this.worldMap.setDirty(); // Brokko
+     }
+ 
+     @Override
+@@ -75,6 +76,7 @@ public final class CraftMapView implements MapView {
+     public void setWorld(World world) {
+         this.worldMap.dimension = ((CraftWorld) world).getHandle().dimension();
+         this.worldMap.uniqueId = world.getUID();
++        this.worldMap.setDirty(); // Brokko
+     }
+ 
+     @Override
+@@ -90,11 +92,13 @@ public final class CraftMapView implements MapView {
+     @Override
+     public void setCenterX(int x) {
+         this.worldMap.centerX = x;
++        this.worldMap.setDirty(); // Brokko
+     }
+ 
+     @Override
+     public void setCenterZ(int z) {
+         this.worldMap.centerZ = z;
++        this.worldMap.setDirty(); // Brokko
+     }
+ 
+     @Override
+@@ -189,6 +193,7 @@ public final class CraftMapView implements MapView {
+     @Override
+     public void setTrackingPosition(boolean trackingPosition) {
+         this.worldMap.trackingPosition = trackingPosition;
++        this.worldMap.setDirty(); // Brokko
+     }
+ 
+     @Override
+@@ -199,6 +204,7 @@ public final class CraftMapView implements MapView {
+     @Override
+     public void setUnlimitedTracking(boolean unlimited) {
+         this.worldMap.unlimitedTracking = unlimited;
++        this.worldMap.setDirty(); // Brokko
+     }
+ 
+     @Override
+@@ -209,5 +215,6 @@ public final class CraftMapView implements MapView {
+     @Override
+     public void setLocked(boolean locked) {
+         this.worldMap.locked = locked;
++        this.worldMap.setDirty(); // Brokko
+     }
+ }
+-- 
+2.32.0.windows.1
+
