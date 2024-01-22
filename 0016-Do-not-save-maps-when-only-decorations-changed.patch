@@ -1,4 +1,4 @@
-From b93598eb86698fbce52747c32622bd25ed0fc298 Mon Sep 17 00:00:00 2001
+From c49e57071c2d9caf13a771615d9c0b27addafedb Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Fri, 29 Dec 2023 08:32:50 +0100
 Subject: [PATCH] Do not save maps when only decorations changed
@@ -9,12 +9,12 @@ Subject: [PATCH] Do not save maps when only decorations changed
  2 files changed, 18 insertions(+), 2 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-index e4c4948e0..013d4c762 100644
+index 45269115e..4f413373c 100644
 --- a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 +++ b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 @@ -304,7 +304,12 @@ public class MapItemSavedData extends SavedData {
  
-             if (this.decorations.size() < player.level().paperConfig().maps.itemFrameCursorLimit) { // Paper
+             if (this.decorations.size() < player.level().paperConfig().maps.itemFrameCursorLimit) { // Paper - Limit item frame cursors on maps
              this.addDecoration(MapDecoration.Type.FRAME, player.level(), "frame-" + entityitemframe.getId(), (double) blockposition.getX(), (double) blockposition.getZ(), (double) (entityitemframe.getDirection().get2DDataValue() * 90), (Component) null);
 -            this.frameMarkers.put(worldmapframe1.getId(), worldmapframe1);
 +            // Brokko start - mark dirty if mapframe changed
@@ -23,7 +23,7 @@ index e4c4948e0..013d4c762 100644
 +                setDirty();
 +            }
 +            // Brokko end
-             } // Paper
+             } // Paper - Limit item frame cursors on maps
          }
  
 @@ -451,7 +456,7 @@ public class MapItemSavedData extends SavedData {
@@ -44,7 +44,7 @@ index e4c4948e0..013d4c762 100644
                  return true;
              }
  
-             if (!this.isTrackedCountOverLimit(((Level) world).paperConfig().maps.itemFrameCursorLimit)) { // Paper
+             if (!this.isTrackedCountOverLimit(((Level) world).paperConfig().maps.itemFrameCursorLimit)) { // Paper - Limit item frame cursors on maps
 +                setDirty(); // Brokko
                  this.bannerMarkers.put(mapiconbanner.getId(), mapiconbanner);
                  this.addDecoration(mapiconbanner.getDecoration(), world, mapiconbanner.getId(), d0, d1, 180.0D, mapiconbanner.getName());
