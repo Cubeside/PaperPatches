@@ -1,0 +1,43 @@
+From 623ca0c6400a5ed3098fb60d40cb324a495dce5a Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Fri, 10 Jun 2022 01:02:59 +0200
+Subject: [PATCH] NoAI Mobs are not pushable
+
+---
+ src/main/java/net/minecraft/world/entity/Entity.java | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 1a19f18b5..9924e40e2 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -2110,6 +2110,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, S
+ 
+     public void playerTouch(Player player) {}
+ 
++    // Brokko start - pushable
++    private boolean isRealPushable() {
++        return !(this instanceof Mob) || !((Mob) this).isNoAi();
++    }
++    // Brokko end
++
+     public void push(Entity entity) {
+         if (!this.isPassengerOfSameVehicle(entity)) {
+             if (!entity.noPhysics && !this.noPhysics) {
+@@ -2132,11 +2138,11 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, S
+                     d1 *= d3;
+                     d0 *= 0.05000000074505806D;
+                     d1 *= 0.05000000074505806D;
+-                    if (!this.isVehicle() && this.isPushable()) {
++                    if (!this.isVehicle() && this.isPushable() && this.isRealPushable()) { //Brokko isRealPushable
+                         this.push(-d0, 0.0D, -d1);
+                     }
+ 
+-                    if (!entity.isVehicle() && entity.isPushable()) {
++                    if (!entity.isVehicle() && entity.isPushable() && entity.isRealPushable()) { //Brokko isRealPushable
+                         entity.push(d0, 0.0D, d1);
+                     }
+                 }
+-- 
+2.32.0.windows.1
+
