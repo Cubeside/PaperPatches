@@ -1,6 +1,6 @@
-From c49e57071c2d9caf13a771615d9c0b27addafedb Mon Sep 17 00:00:00 2001
+From 0c662b335192df4f131cf12a0a7cc7d22512e618 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
-Date: Fri, 29 Dec 2023 08:32:50 +0100
+Date: Mon, 13 May 2024 22:32:48 +0200
 Subject: [PATCH] Do not save maps when only decorations changed
 
 ---
@@ -9,13 +9,13 @@ Subject: [PATCH] Do not save maps when only decorations changed
  2 files changed, 18 insertions(+), 2 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-index 45269115e..4f413373c 100644
+index cf8ae635f..f345e9fb0 100644
 --- a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 +++ b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-@@ -304,7 +304,12 @@ public class MapItemSavedData extends SavedData {
+@@ -326,7 +326,12 @@ public class MapItemSavedData extends SavedData {
  
              if (this.decorations.size() < player.level().paperConfig().maps.itemFrameCursorLimit) { // Paper - Limit item frame cursors on maps
-             this.addDecoration(MapDecoration.Type.FRAME, player.level(), "frame-" + entityitemframe.getId(), (double) blockposition.getX(), (double) blockposition.getZ(), (double) (entityitemframe.getDirection().get2DDataValue() * 90), (Component) null);
+             this.addDecoration(MapDecorationTypes.FRAME, player.level(), "frame-" + entityitemframe.getId(), (double) blockposition.getX(), (double) blockposition.getZ(), (double) (entityitemframe.getDirection().get2DDataValue() * 90), (Component) null);
 -            this.frameMarkers.put(worldmapframe1.getId(), worldmapframe1);
 +            // Brokko start - mark dirty if mapframe changed
 +            MapFrame oldFrame = this.frameMarkers.put(worldmapframe1.getId(), worldmapframe1);
@@ -26,7 +26,7 @@ index 45269115e..4f413373c 100644
              } // Paper - Limit item frame cursors on maps
          }
  
-@@ -451,7 +456,7 @@ public class MapItemSavedData extends SavedData {
+@@ -456,7 +461,7 @@ public class MapItemSavedData extends SavedData {
      }
  
      public void setDecorationsDirty() {
@@ -35,7 +35,7 @@ index 45269115e..4f413373c 100644
          this.carriedBy.forEach(MapItemSavedData.HoldingPlayer::markDecorationsDirty);
      }
  
-@@ -483,11 +488,13 @@ public class MapItemSavedData extends SavedData {
+@@ -488,11 +493,13 @@ public class MapItemSavedData extends SavedData {
              }
  
              if (this.bannerMarkers.remove(mapiconbanner.getId(), mapiconbanner)) {
@@ -47,9 +47,9 @@ index 45269115e..4f413373c 100644
              if (!this.isTrackedCountOverLimit(((Level) world).paperConfig().maps.itemFrameCursorLimit)) { // Paper - Limit item frame cursors on maps
 +                setDirty(); // Brokko
                  this.bannerMarkers.put(mapiconbanner.getId(), mapiconbanner);
-                 this.addDecoration(mapiconbanner.getDecoration(), world, mapiconbanner.getId(), d0, d1, 180.0D, mapiconbanner.getName());
+                 this.addDecoration(mapiconbanner.getDecoration(), world, mapiconbanner.getId(), d0, d1, 180.0D, (Component) mapiconbanner.name().orElse(null)); // CraftBukkit - decompile error
                  return true;
-@@ -508,6 +515,7 @@ public class MapItemSavedData extends SavedData {
+@@ -513,6 +520,7 @@ public class MapItemSavedData extends SavedData {
  
                  if (!mapiconbanner.equals(mapiconbanner1)) {
                      iterator.remove();
@@ -57,7 +57,7 @@ index 45269115e..4f413373c 100644
                      this.removeDecoration(mapiconbanner.getId());
                  }
              }
-@@ -522,6 +530,7 @@ public class MapItemSavedData extends SavedData {
+@@ -527,6 +535,7 @@ public class MapItemSavedData extends SavedData {
      public void removedFromFrame(BlockPos pos, int id) {
          this.removeDecoration("frame-" + id);
          this.frameMarkers.remove(MapFrame.frameId(pos));
@@ -66,10 +66,10 @@ index 45269115e..4f413373c 100644
  
      public boolean updateColor(int x, int z, byte color) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java b/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java
-index c3266c43a..fffd2aca3 100644
+index a15cdf645..de8764db7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java
 +++ b/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java
-@@ -54,6 +54,7 @@ public final class CraftMapView implements MapView {
+@@ -47,6 +47,7 @@ public final class CraftMapView implements MapView {
      @Override
      public void setScale(Scale scale) {
          this.worldMap.scale = scale.getValue();
@@ -77,7 +77,7 @@ index c3266c43a..fffd2aca3 100644
      }
  
      @Override
-@@ -75,6 +76,7 @@ public final class CraftMapView implements MapView {
+@@ -68,6 +69,7 @@ public final class CraftMapView implements MapView {
      public void setWorld(World world) {
          this.worldMap.dimension = ((CraftWorld) world).getHandle().dimension();
          this.worldMap.uniqueId = world.getUID();
@@ -85,7 +85,7 @@ index c3266c43a..fffd2aca3 100644
      }
  
      @Override
-@@ -90,11 +92,13 @@ public final class CraftMapView implements MapView {
+@@ -83,11 +85,13 @@ public final class CraftMapView implements MapView {
      @Override
      public void setCenterX(int x) {
          this.worldMap.centerX = x;
@@ -99,7 +99,7 @@ index c3266c43a..fffd2aca3 100644
      }
  
      @Override
-@@ -189,6 +193,7 @@ public final class CraftMapView implements MapView {
+@@ -182,6 +186,7 @@ public final class CraftMapView implements MapView {
      @Override
      public void setTrackingPosition(boolean trackingPosition) {
          this.worldMap.trackingPosition = trackingPosition;
@@ -107,7 +107,7 @@ index c3266c43a..fffd2aca3 100644
      }
  
      @Override
-@@ -199,6 +204,7 @@ public final class CraftMapView implements MapView {
+@@ -192,6 +197,7 @@ public final class CraftMapView implements MapView {
      @Override
      public void setUnlimitedTracking(boolean unlimited) {
          this.worldMap.unlimitedTracking = unlimited;
@@ -115,7 +115,7 @@ index c3266c43a..fffd2aca3 100644
      }
  
      @Override
-@@ -209,5 +215,6 @@ public final class CraftMapView implements MapView {
+@@ -202,5 +208,6 @@ public final class CraftMapView implements MapView {
      @Override
      public void setLocked(boolean locked) {
          this.worldMap.locked = locked;
