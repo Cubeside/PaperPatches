@@ -1,0 +1,25 @@
+From b319ef5f683fe2d922c7340b032f57dd6e4715fc Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Tue, 14 May 2024 21:30:37 +0200
+Subject: [PATCH] Log exception when Entities saving failed
+
+---
+ .../papermc/paper/chunk/system/scheduling/NewChunkHolder.java   | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java b/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java
+index 56b07a330..e6f2f2a91 100644
+--- a/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java
++++ b/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java
+@@ -1942,7 +1942,7 @@ public final class NewChunkHolder {
+         } catch (final ThreadDeath death) {
+             throw death;
+         } catch (final Throwable thr) {
+-            LOGGER.error("Failed to save entity data (" + this.chunkX + "," + this.chunkZ + ") in world '" + this.world.getWorld().getName() + "'");
++            LOGGER.error("Failed to save entity data (" + this.chunkX + "," + this.chunkZ + ") in world '" + this.world.getWorld().getName() + "'", thr); // Brokko - Log exception
+         }
+ 
+         return true;
+-- 
+2.32.0.windows.1
+
