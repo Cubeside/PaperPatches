@@ -1,0 +1,25 @@
+From 005d99b2942f814bc06484db3771667c4b4431e7 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Mon, 27 May 2024 03:52:01 +0200
+Subject: [PATCH] Allow deserializing old heads
+
+---
+ .../com/destroystokyo/paper/profile/CraftPlayerProfile.java     | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java b/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
+index cbe2789f8..8c3ad4cfc 100644
+--- a/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
++++ b/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
+@@ -329,6 +329,8 @@ public class CraftPlayerProfile implements PlayerProfile, SharedPlayerProfile {
+         UUID uniqueId = ConfigSerializationUtil.getUuid(map, "uniqueId", true);
+         String name = ConfigSerializationUtil.getString(map, "name", true);
+ 
++        if (name != null && !StringUtil.isValidPlayerName(name)) name = uniqueId == null ? "" : null; // Brokko - Allow loading old heads
++
+         // This also validates the deserialized unique id and name (ensures that not both are null):
+         CraftPlayerProfile profile = new CraftPlayerProfile(uniqueId, name);
+ 
+-- 
+2.32.0.windows.1
+
