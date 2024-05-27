@@ -1,4 +1,4 @@
-From 01c9afbe68a42ca4efabb728c13b260025cdf860 Mon Sep 17 00:00:00 2001
+From 99ffa93be0d52bb0a4a2d85e251e58471f8a5b87 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Thu, 30 Jun 2022 04:45:39 +0200
 Subject: [PATCH] Do not update old block (onRemove) when setting blocks
@@ -9,15 +9,15 @@ Subject: [PATCH] Do not update old block (onRemove) when setting blocks
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index c46cbbf9a..2085d3706 100644
+index 14ee7b5b9..0917426ec 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -591,7 +591,7 @@ public class LevelChunk extends ChunkAccess {
+@@ -452,7 +452,7 @@ public class LevelChunk extends ChunkAccess {
  
                  boolean flag3 = iblockdata1.hasBlockEntity();
  
--                if (!this.level.isClientSide) {
-+                if (!this.level.isClientSide && doPlace) { // Brokko - dont call onRemove when not doPlace!
+-                if (!this.level.isClientSide && !this.level.isBlockPlaceCancelled) { // Paper - prevent calling cleanup logic when undoing a block place upon a cancelled BlockPlaceEvent
++                if (!this.level.isClientSide && !this.level.isBlockPlaceCancelled && doPlace) { // Paper - prevent calling cleanup logic when undoing a block place upon a cancelled BlockPlaceEvent // Brokko - dont call onRemove when not doPlace!
                      iblockdata1.onRemove(this.level, blockposition, iblockdata, flag);
                  } else if (!iblockdata1.is(block) && flag3) {
                      this.removeBlockEntity(blockposition);
