@@ -1,0 +1,25 @@
+From 2075bfc7648c057c9d8c9d217af40c2f280da19b Mon Sep 17 00:00:00 2001
+From: fanta <tobiasmuellner@outlook.com>
+Date: Sat, 8 Jun 2024 03:57:59 +0200
+Subject: [PATCH] bigger command suggestion limit
+
+---
+ .../minecraft/server/network/ServerGamePacketListenerImpl.java  | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 4ae88bfce..45d2fd760 100644
+--- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -258,7 +258,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+     private static final int MAXIMUM_FLYING_TICKS = 80;
+     private static final Component CHAT_VALIDATION_FAILED = Component.translatable("multiplayer.disconnect.chat_validation_failed");
+     private static final Component INVALID_COMMAND_SIGNATURE = Component.translatable("chat.disabled.invalid_command_signature").withStyle(ChatFormatting.RED);
+-    private static final int MAX_COMMAND_SUGGESTIONS = 1000;
++    private static final int MAX_COMMAND_SUGGESTIONS = 5000;
+     public ServerPlayer player;
+     public final PlayerChunkSender chunkSender;
+     private int tickCount;
+-- 
+2.44.0.windows.1
+
