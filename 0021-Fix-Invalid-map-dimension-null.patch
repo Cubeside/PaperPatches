@@ -1,0 +1,28 @@
+From 599e91e319f810fb88e27a37e4f21d84e71103ba Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Sat, 10 Aug 2024 04:48:26 +0200
+Subject: [PATCH] Fix "Invalid map dimension: null"
+
+---
+ .../world/level/saveddata/maps/MapItemSavedData.java         | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
+index 2079f4c50..c0d252f3b 100644
+--- a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
++++ b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
+@@ -157,6 +157,11 @@ public class MapItemSavedData extends SavedData {
+                 UUID uniqueId = new UUID(most, least);
+ 
+                 CraftWorld world = (CraftWorld) Bukkit.getWorld(uniqueId);
++                // Brokko start - Fix "Invalid map dimension: null"
++                if (world == null) {
++                    world = (CraftWorld) Bukkit.getWorlds().get(0);
++                }
++                // Brokko end
+                 // Check if the stored world details are correct.
+                 if (world == null) {
+                     /* All Maps which do not have their valid world loaded are set to a dimension which hopefully won't be reached.
+-- 
+2.32.0.windows.1
+
