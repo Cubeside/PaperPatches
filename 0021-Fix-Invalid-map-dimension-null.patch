@@ -1,17 +1,22 @@
-From 599e91e319f810fb88e27a37e4f21d84e71103ba Mon Sep 17 00:00:00 2001
+From 81bccb0c45282bf17235223564c9f935e0804514 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Sat, 10 Aug 2024 04:48:26 +0200
 Subject: [PATCH] Fix "Invalid map dimension: null"
 
 ---
- .../world/level/saveddata/maps/MapItemSavedData.java         | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../world/level/saveddata/maps/MapItemSavedData.java     | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-index 2079f4c50..c0d252f3b 100644
+index 2079f4c50..c23dfce20 100644
 --- a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 +++ b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-@@ -157,6 +157,11 @@ public class MapItemSavedData extends SavedData {
+@@ -153,10 +153,15 @@ public class MapItemSavedData extends SavedData {
+             long least = nbt.getLong("UUIDLeast");
+             long most = nbt.getLong("UUIDMost");
+ 
+-            if (least != 0L && most != 0L) {
++            // if (least != 0L && most != 0L) { // Brokko - Fix "Invalid map dimension: null"
                  UUID uniqueId = new UUID(most, least);
  
                  CraftWorld world = (CraftWorld) Bukkit.getWorld(uniqueId);
@@ -23,6 +28,15 @@ index 2079f4c50..c0d252f3b 100644
                  // Check if the stored world details are correct.
                  if (world == null) {
                      /* All Maps which do not have their valid world loaded are set to a dimension which hopefully won't be reached.
+@@ -165,7 +170,7 @@ public class MapItemSavedData extends SavedData {
+                 } else {
+                     return world.getHandle().dimension();
+                 }
+-            }
++            // } // Brokko - Fix "Invalid map dimension: null"
+             throw new IllegalArgumentException("Invalid map dimension: " + String.valueOf(nbt.get("dimension")));
+             // CraftBukkit end
+         });
 -- 
 2.32.0.windows.1
 
