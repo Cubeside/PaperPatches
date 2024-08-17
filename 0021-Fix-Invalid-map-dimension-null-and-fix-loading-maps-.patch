@@ -1,14 +1,15 @@
-From 81bccb0c45282bf17235223564c9f935e0804514 Mon Sep 17 00:00:00 2001
+From d91d31ffc691dc37808e16c6477699542080615a Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Sat, 10 Aug 2024 04:48:26 +0200
-Subject: [PATCH] Fix "Invalid map dimension: null"
+Subject: [PATCH] Fix "Invalid map dimension: null" and fix loading maps with
+ invalid color array
 
 ---
- .../world/level/saveddata/maps/MapItemSavedData.java     | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ .../level/saveddata/maps/MapItemSavedData.java    | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-index 2079f4c50..c23dfce20 100644
+index 2079f4c50..1dde87f3c 100644
 --- a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 +++ b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 @@ -153,10 +153,15 @@ public class MapItemSavedData extends SavedData {
@@ -37,6 +38,20 @@ index 2079f4c50..c23dfce20 100644
              throw new IllegalArgumentException("Invalid map dimension: " + String.valueOf(nbt.get("dimension")));
              // CraftBukkit end
          });
+@@ -180,8 +185,12 @@ public class MapItemSavedData extends SavedData {
+ 
+         if (abyte.length == 16384) {
+             worldmap.colors = abyte;
++            // Brokko start - move up and log
++            worldmap.vanillaRender.buffer = abyte; // Paper
++        } else {
++            MapItemSavedData.LOGGER.warn("Invalid map data size: " + abyte.length);
+         }
+-        worldmap.vanillaRender.buffer = abyte; // Paper
++        // Brokko end
+ 
+         RegistryOps<Tag> registryops = registryLookup.createSerializationContext(NbtOps.INSTANCE);
+         List<MapBanner> list = (List) MapBanner.LIST_CODEC.parse(registryops, nbt.get("banners")).resultOrPartial((s) -> {
 -- 
 2.32.0.windows.1
 
