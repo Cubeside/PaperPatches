@@ -1,18 +1,18 @@
-From f28f20f766e4d29ef99f803e42c1bbb0f809000b Mon Sep 17 00:00:00 2001
+From b47adb2a04ff777ae0e40dd3b7ecdd3517b1ae4b Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
-Date: Mon, 13 May 2024 22:32:48 +0200
+Date: Sat, 26 Oct 2024 06:04:49 +0200
 Subject: [PATCH] Do not save maps when only decorations changed
 
 ---
- .../level/saveddata/maps/MapItemSavedData.java      | 13 +++++++++++--
- .../org/bukkit/craftbukkit/map/CraftMapView.java    |  7 +++++++
- 2 files changed, 18 insertions(+), 2 deletions(-)
+ .../world/level/saveddata/maps/MapItemSavedData.java | 12 ++++++++++--
+ .../org/bukkit/craftbukkit/map/CraftMapView.java     |  7 +++++++
+ 2 files changed, 17 insertions(+), 2 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-index 17f33c83c..2079f4c50 100644
+index 48a20b8ae..303a3da25 100644
 --- a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 +++ b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-@@ -327,7 +327,12 @@ public class MapItemSavedData extends SavedData {
+@@ -340,7 +340,12 @@ public class MapItemSavedData extends SavedData {
  
              if (this.decorations.size() < player.level().paperConfig().maps.itemFrameCursorLimit) { // Paper - Limit item frame cursors on maps
              this.addDecoration(MapDecorationTypes.FRAME, player.level(), MapItemSavedData.getFrameKey(entityitemframe.getId()), (double) blockposition.getX(), (double) blockposition.getZ(), (double) (entityitemframe.getDirection().get2DDataValue() * 90), (Component) null);
@@ -26,7 +26,7 @@ index 17f33c83c..2079f4c50 100644
              } // Paper - Limit item frame cursors on maps
          }
  
-@@ -457,7 +462,7 @@ public class MapItemSavedData extends SavedData {
+@@ -498,7 +503,7 @@ public class MapItemSavedData extends SavedData {
      }
  
      public void setDecorationsDirty() {
@@ -35,7 +35,7 @@ index 17f33c83c..2079f4c50 100644
          this.carriedBy.forEach(MapItemSavedData.HoldingPlayer::markDecorationsDirty);
      }
  
-@@ -489,11 +494,13 @@ public class MapItemSavedData extends SavedData {
+@@ -530,11 +535,13 @@ public class MapItemSavedData extends SavedData {
              }
  
              if (this.bannerMarkers.remove(mapiconbanner.getId(), mapiconbanner)) {
@@ -49,7 +49,7 @@ index 17f33c83c..2079f4c50 100644
                  this.bannerMarkers.put(mapiconbanner.getId(), mapiconbanner);
                  this.addDecoration(mapiconbanner.getDecoration(), world, mapiconbanner.getId(), d0, d1, 180.0D, (Component) mapiconbanner.name().orElse(null)); // CraftBukkit - decompile error
                  return true;
-@@ -514,6 +521,7 @@ public class MapItemSavedData extends SavedData {
+@@ -555,6 +562,7 @@ public class MapItemSavedData extends SavedData {
  
                  if (!mapiconbanner.equals(mapiconbanner1)) {
                      iterator.remove();
@@ -57,14 +57,6 @@ index 17f33c83c..2079f4c50 100644
                      this.removeDecoration(mapiconbanner.getId());
                  }
              }
-@@ -528,6 +536,7 @@ public class MapItemSavedData extends SavedData {
-     public void removedFromFrame(BlockPos pos, int id) {
-         this.removeDecoration(MapItemSavedData.getFrameKey(id));
-         this.frameMarkers.remove(MapFrame.frameId(pos));
-+        setDirty(); // Brokko
-     }
- 
-     public boolean updateColor(int x, int z, byte color) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java b/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java
 index a15cdf645..de8764db7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java
