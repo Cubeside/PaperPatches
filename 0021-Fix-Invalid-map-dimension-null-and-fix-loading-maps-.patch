@@ -1,6 +1,6 @@
-From d91d31ffc691dc37808e16c6477699542080615a Mon Sep 17 00:00:00 2001
+From 0e2142248e8796694c77ee357e5c96d0422ce4ff Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
-Date: Sat, 10 Aug 2024 04:48:26 +0200
+Date: Sat, 26 Oct 2024 05:42:55 +0200
 Subject: [PATCH] Fix "Invalid map dimension: null" and fix loading maps with
  invalid color array
 
@@ -9,7 +9,7 @@ Subject: [PATCH] Fix "Invalid map dimension: null" and fix loading maps with
  1 file changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-index 2079f4c50..1dde87f3c 100644
+index ae321b3b8..48a20b8ae 100644
 --- a/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 +++ b/src/main/java/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 @@ -153,10 +153,15 @@ public class MapItemSavedData extends SavedData {
@@ -50,7 +50,7 @@ index 2079f4c50..1dde87f3c 100644
 -        worldmap.vanillaRender.buffer = abyte; // Paper
 +        // Brokko end
  
-         RegistryOps<Tag> registryops = registryLookup.createSerializationContext(NbtOps.INSTANCE);
+         RegistryOps<Tag> registryops = registries.createSerializationContext(NbtOps.INSTANCE);
          List<MapBanner> list = (List) MapBanner.LIST_CODEC.parse(registryops, nbt.get("banners")).resultOrPartial((s) -> {
 -- 
 2.32.0.windows.1
