@@ -1,25 +1,25 @@
-From e92f9babf52588271e1468704c5f3bdaf5b2f66e Mon Sep 17 00:00:00 2001
+From 68d833c0049f45c9e1461d14cbfebf0ed89c9023 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
-Date: Sat, 6 Jan 2024 05:40:53 +0100
-Subject: [PATCH] Avoid sync io
+Date: Thu, 9 Jan 2025 07:57:45 +0100
+Subject: [PATCH 3/3] Avoid sync io
 
 ---
- src/main/java/net/minecraft/nbt/NbtIo.java | 2 +-
+ net/minecraft/nbt/NbtIo.java | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/main/java/net/minecraft/nbt/NbtIo.java b/src/main/java/net/minecraft/nbt/NbtIo.java
-index c2044d2e8..5d653f74b 100644
---- a/src/main/java/net/minecraft/nbt/NbtIo.java
-+++ b/src/main/java/net/minecraft/nbt/NbtIo.java
-@@ -26,7 +26,7 @@ import net.minecraft.util.FastBufferedInputStream;
+diff --git a/net/minecraft/nbt/NbtIo.java b/net/minecraft/nbt/NbtIo.java
+index c8eb368..07d9386 100644
+--- a/net/minecraft/nbt/NbtIo.java
++++ b/net/minecraft/nbt/NbtIo.java
+@@ -24,7 +24,7 @@ import net.minecraft.util.FastBufferedInputStream;
  
  public class NbtIo {
+     private static final OpenOption[] SYNC_OUTPUT_OPTIONS = new OpenOption[]{
+-        StandardOpenOption.SYNC, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
++        StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING // Brokko
+     };
  
--    private static final OpenOption[] SYNC_OUTPUT_OPTIONS = new OpenOption[]{StandardOpenOption.SYNC, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING};
-+    private static final OpenOption[] SYNC_OUTPUT_OPTIONS = new OpenOption[]{StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING}; // Brokko
- 
-     public NbtIo() {}
- 
+     public static CompoundTag readCompressed(Path path, NbtAccounter accounter) throws IOException {
 -- 
 2.32.0.windows.1
 
