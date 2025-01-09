@@ -1,0 +1,32 @@
+From 2eddd39fdef27c777c01879ba560ef1ac7d449a5 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Thu, 31 Oct 2024 08:32:29 +0100
+Subject: [PATCH] kick old player on collision
+
+---
+ .../main/java/net/md_5/bungee/connection/InitialHandler.java    | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 185e63ad..ef2ff25d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -626,6 +626,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+         {
+             // TODO See #1218
+             disconnect( bungee.getTranslation( "already_connected_proxy" ) );
++            oldName.disconnect(new TextComponent("Reconnected."));
+             return;
+         }
+ 
+@@ -637,6 +638,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+             {
+                 // TODO See #1218
+                 disconnect( bungee.getTranslation( "already_connected_proxy" ) );
++                oldID.disconnect(new TextComponent("Reconnected."));
+                 return;
+             }
+         }
+-- 
+2.32.0.windows.1
+
