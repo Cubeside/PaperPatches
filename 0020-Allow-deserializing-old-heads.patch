@@ -1,25 +1,24 @@
-From 005d99b2942f814bc06484db3771667c4b4431e7 Mon Sep 17 00:00:00 2001
+From 78d61fa0a88ff94f9cde832595d4b86c2fa2b6c6 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
-Date: Mon, 27 May 2024 03:52:01 +0200
+Date: Thu, 9 Jan 2025 09:26:11 +0100
 Subject: [PATCH] Allow deserializing old heads
 
 ---
- .../com/destroystokyo/paper/profile/CraftPlayerProfile.java     | 2 ++
- 1 file changed, 2 insertions(+)
+ .../java/com/destroystokyo/paper/profile/CraftPlayerProfile.java | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java b/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
-index cbe2789f8..8c3ad4cfc 100644
---- a/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
-+++ b/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
-@@ -329,6 +329,8 @@ public class CraftPlayerProfile implements PlayerProfile, SharedPlayerProfile {
+diff --git a/paper-server/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java b/paper-server/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
+index 8849862b45..73e01308f2 100644
+--- a/paper-server/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
++++ b/paper-server/src/main/java/com/destroystokyo/paper/profile/CraftPlayerProfile.java
+@@ -356,6 +356,7 @@ public class CraftPlayerProfile implements PlayerProfile, SharedPlayerProfile {
+     public static CraftPlayerProfile deserialize(Map<String, Object> map) {
          UUID uniqueId = ConfigSerializationUtil.getUuid(map, "uniqueId", true);
          String name = ConfigSerializationUtil.getString(map, "name", true);
- 
 +        if (name != null && !StringUtil.isValidPlayerName(name)) name = uniqueId == null ? "" : null; // Brokko - Allow loading old heads
-+
+ 
          // This also validates the deserialized unique id and name (ensures that not both are null):
          CraftPlayerProfile profile = new CraftPlayerProfile(uniqueId, name);
- 
 -- 
 2.32.0.windows.1
 
