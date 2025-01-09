@@ -1,4 +1,4 @@
-From e558b0113ff1155b80bfad256b0c49400fefc231 Mon Sep 17 00:00:00 2001
+From 6d1249681bd48412ed980e565668c98d094c5163 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Thu, 9 Jan 2025 09:09:42 +0100
 Subject: [PATCH] Fix "Invalid map dimension: null" and fix loading maps with
@@ -9,7 +9,7 @@ Subject: [PATCH] Fix "Invalid map dimension: null" and fix loading maps with
  1 file changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-index f5a131e..7ecb2de 100644
+index f5a131e..0b0770e 100644
 --- a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 +++ b/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 @@ -138,10 +138,15 @@ public class MapItemSavedData extends SavedData {
@@ -43,7 +43,7 @@ index f5a131e..7ecb2de 100644
          if (byteArray.length == 16384) {
              mapItemSavedData.colors = byteArray;
 +            // Brokko start - move up and log
-+            worldmap.vanillaRender.buffer = byteArray; // Paper - Use Vanilla map renderer when possible
++            mapItemSavedData.vanillaRender.buffer = byteArray; // Paper - Use Vanilla map renderer when possible
 +        } else {
 +            MapItemSavedData.LOGGER.warn("Invalid map data size: " + byteArray.length);
          }
