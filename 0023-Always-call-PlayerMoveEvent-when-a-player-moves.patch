@@ -1,17 +1,17 @@
-From d66dbfb90fdbf7e188d7f05694bd660fa60c692b Mon Sep 17 00:00:00 2001
+From 32af4f39eddd428c28ee93e3d25c12f2b835eb15 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
-Date: Wed, 23 Oct 2024 07:56:28 +0200
-Subject: [PATCH] Always call PlayerMoveEvent when a player moves
+Date: Thu, 9 Jan 2025 09:05:41 +0100
+Subject: [PATCH 2/3] Always call PlayerMoveEvent when a player moves
 
 ---
  .../server/network/ServerGamePacketListenerImpl.java      | 8 +++++---
  1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index fcccf989c..0197523b6 100644
---- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-+++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -1546,10 +1546,12 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index d248671..ca61376 100644
+--- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -1516,10 +1516,12 @@ public class ServerGamePacketListenerImpl
                                  }
  
                                  // Prevent 40 event-calls for less than a single pixel of movement >.>
