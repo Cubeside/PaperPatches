@@ -1,0 +1,69 @@
+From 08529bdd853da16521d3402e3e98026363a8c4f4 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Fri, 10 Jan 2025 04:32:34 +0100
+Subject: [PATCH] P+MC Do not save maps when only decorations changed
+
+---
+ .../main/java/org/bukkit/craftbukkit/map/CraftMapView.java | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/paper-server/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java b/paper-server/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java
+index 26a402b12f..685dbd2b32 100644
+--- a/paper-server/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java
++++ b/paper-server/src/main/java/org/bukkit/craftbukkit/map/CraftMapView.java
+@@ -48,6 +48,7 @@ public final class CraftMapView implements MapView {
+     @Override
+     public void setScale(Scale scale) {
+         this.worldMap.scale = scale.getValue();
++        this.worldMap.setDirty(); // Brokko
+     }
+ 
+     @Override
+@@ -69,6 +70,7 @@ public final class CraftMapView implements MapView {
+     public void setWorld(World world) {
+         this.worldMap.dimension = ((CraftWorld) world).getHandle().dimension();
+         this.worldMap.uniqueId = world.getUID();
++        this.worldMap.setDirty(); // Brokko
+     }
+ 
+     @Override
+@@ -84,11 +86,13 @@ public final class CraftMapView implements MapView {
+     @Override
+     public void setCenterX(int x) {
+         this.worldMap.centerX = x;
++        this.worldMap.setDirty(); // Brokko
+     }
+ 
+     @Override
+     public void setCenterZ(int z) {
+         this.worldMap.centerZ = z;
++        this.worldMap.setDirty(); // Brokko
+     }
+ 
+     @Override
+@@ -183,6 +187,7 @@ public final class CraftMapView implements MapView {
+     @Override
+     public void setTrackingPosition(boolean trackingPosition) {
+         this.worldMap.trackingPosition = trackingPosition;
++        this.worldMap.setDirty(); // Brokko
+     }
+ 
+     @Override
+@@ -193,6 +198,7 @@ public final class CraftMapView implements MapView {
+     @Override
+     public void setUnlimitedTracking(boolean unlimited) {
+         this.worldMap.unlimitedTracking = unlimited;
++        this.worldMap.setDirty(); // Brokko
+     }
+ 
+     @Override
+@@ -203,5 +209,6 @@ public final class CraftMapView implements MapView {
+     @Override
+     public void setLocked(boolean locked) {
+         this.worldMap.locked = locked;
++        this.worldMap.setDirty(); // Brokko
+     }
+ }
+-- 
+2.32.0.windows.1
+
