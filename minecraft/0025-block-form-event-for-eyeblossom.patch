@@ -1,0 +1,50 @@
+From 2700342266612255e669543353b2bca28fb1a892 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Sun, 23 Mar 2025 04:09:31 +0100
+Subject: [PATCH] block form event for eyeblossom
+
+---
+ net/minecraft/world/level/block/EyeblossomBlock.java | 6 +++++-
+ net/minecraft/world/level/block/FlowerPotBlock.java  | 9 +++++----
+ 2 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/net/minecraft/world/level/block/EyeblossomBlock.java b/net/minecraft/world/level/block/EyeblossomBlock.java
+index 349ab10..6119846 100644
+--- a/net/minecraft/world/level/block/EyeblossomBlock.java
++++ b/net/minecraft/world/level/block/EyeblossomBlock.java
+@@ -82,7 +82,11 @@ public class EyeblossomBlock extends FlowerBlock {
+             return false;
+         } else {
+             EyeblossomBlock.Type type = this.type.transform();
+-            level.setBlock(pos, type.state(), 3);
++            // Brokko start - BlockFormEvent
++            if (!org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(level, pos, type.state(), 3)) {
++                return false;
++            }
++            // Brokko end
+             level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
+             type.spawnTransformParticle(level, pos, random);
+             BlockPos.betweenClosed(pos.offset(-3, -2, -3), pos.offset(3, 2, 3)).forEach(checkPos -> {
+diff --git a/net/minecraft/world/level/block/FlowerPotBlock.java b/net/minecraft/world/level/block/FlowerPotBlock.java
+index b1264a2..8e91207 100644
+--- a/net/minecraft/world/level/block/FlowerPotBlock.java
++++ b/net/minecraft/world/level/block/FlowerPotBlock.java
+@@ -160,10 +160,11 @@ public class FlowerPotBlock extends Block {
+             boolean flag = this.potted == Blocks.OPEN_EYEBLOSSOM;
+             boolean isNaturalNight = CreakingHeartBlock.isNaturalNight(level);
+             if (flag != isNaturalNight) {
+-                level.setBlock(pos, this.opposite(state), 3);
+-                EyeblossomBlock.Type type = EyeblossomBlock.Type.fromBoolean(flag).transform();
+-                type.spawnTransformParticle(level, pos, random);
+-                level.playSound(null, pos, type.longSwitchSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
++                if (org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(level, pos, this.opposite(state), 3)) { // Brokko - BlockFormEvent
++                    EyeblossomBlock.Type type = EyeblossomBlock.Type.fromBoolean(flag).transform();
++                    type.spawnTransformParticle(level, pos, random);
++                    level.playSound(null, pos, type.longSwitchSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
++                } // Brokko - BlockFormEvent
+             }
+         }
+ 
+-- 
+2.32.0.windows.1
+
