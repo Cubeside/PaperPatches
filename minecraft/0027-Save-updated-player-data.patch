@@ -1,0 +1,39 @@
+From c62d065be3da5689136749d5e8ed47254400cb7c Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Tue, 27 May 2025 00:58:20 +0200
+Subject: [PATCH] Save updated player data
+
+---
+ .../world/level/storage/PlayerDataStorage.java   | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/net/minecraft/world/level/storage/PlayerDataStorage.java b/net/minecraft/world/level/storage/PlayerDataStorage.java
+index ab9282c..63fc147 100644
+--- a/net/minecraft/world/level/storage/PlayerDataStorage.java
++++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
+@@ -115,6 +115,22 @@ public class PlayerDataStorage {
+             int dataVersion = NbtUtils.getDataVersion(compoundTag, -1);
+             compoundTag = DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, compoundTag, dataVersion);
+             // player.load(compoundTag); // CraftBukkit - handled above
++            // Brokko start - save updated player data
++            if (dataVersion != net.minecraft.SharedConstants.getCurrentVersion().getDataVersion().getVersion()) {
++                LOGGER.warn("Saving updated player data for {}", uuid);
++                NbtUtils.addCurrentDataVersion(compoundTag);
++                try {
++                    Path path = getPlayerDir().toPath();
++                    Path path1 = Files.createTempFile(path, uuid + "-", ".dat");
++                    NbtIo.writeCompressed(compoundTag, path1);
++                    Path path2 = path.resolve(uuid + ".dat");
++                    Path path3 = path.resolve(uuid + ".dat_old");
++                    Util.safeReplaceFile(path2, path1, path3);
++                } catch (Exception ex) {
++                    LOGGER.warn("Failed to save player data for {}", uuid, ex);
++                }
++            }
++            // Brokko end
+             return compoundTag;
+         });
+     }
+-- 
+2.49.0.windows.1
+
