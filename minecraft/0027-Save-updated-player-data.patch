@@ -1,4 +1,4 @@
-From c62d065be3da5689136749d5e8ed47254400cb7c Mon Sep 17 00:00:00 2001
+From 1c48c674eb3f6dc5e50b33dde41db958672d029a Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Tue, 27 May 2025 00:58:20 +0200
 Subject: [PATCH] Save updated player data
@@ -8,7 +8,7 @@ Subject: [PATCH] Save updated player data
  1 file changed, 16 insertions(+)
 
 diff --git a/net/minecraft/world/level/storage/PlayerDataStorage.java b/net/minecraft/world/level/storage/PlayerDataStorage.java
-index ab9282c..63fc147 100644
+index ab9282c..22398d2 100644
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
 @@ -115,6 +115,22 @@ public class PlayerDataStorage {
@@ -17,7 +17,7 @@ index ab9282c..63fc147 100644
              // player.load(compoundTag); // CraftBukkit - handled above
 +            // Brokko start - save updated player data
 +            if (dataVersion != net.minecraft.SharedConstants.getCurrentVersion().getDataVersion().getVersion()) {
-+                LOGGER.warn("Saving updated player data for {}", uuid);
++                LOGGER.info("Saving updated player data for {}", uuid);
 +                NbtUtils.addCurrentDataVersion(compoundTag);
 +                try {
 +                    Path path = getPlayerDir().toPath();
