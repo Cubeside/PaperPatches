@@ -1,0 +1,41 @@
+From 12df711c315fd935457359becafd240cb158012d Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Sun, 1 Jun 2025 06:26:10 +0200
+Subject: [PATCH] remove new broken player data fixer
+
+---
+ net/minecraft/util/datafix/DataFixers.java | 18 ------------------
+ 1 file changed, 18 deletions(-)
+
+diff --git a/net/minecraft/util/datafix/DataFixers.java b/net/minecraft/util/datafix/DataFixers.java
+index 650f8e2..4bb7b44 100644
+--- a/net/minecraft/util/datafix/DataFixers.java
++++ b/net/minecraft/util/datafix/DataFixers.java
+@@ -541,24 +541,6 @@ public class DataFixers {
+         Schema schema44 = builder.addSchema(1456, SAME_NAMESPACED);
+         builder.addFixer(new EntityItemFrameDirectionFix(schema44, false));
+         Schema schema45 = builder.addSchema(1458, V1458::new);
+-        // CraftBukkit start
+-        // API allows setting player custom names, so we need to convert them.
+-        // This does *not* handle upgrades in any other version, but generally those shouldn't need conversion.
+-        builder.addFixer(new DataFix(schema45, false) {
+-            @Override
+-            protected TypeRewriteRule makeRule() {
+-                return this.fixTypeEverywhereTyped("Player CustomName", this.getInputSchema().getType(References.PLAYER), typed -> {
+-                    return typed.update(DSL.remainderFinder(), dynamic -> {
+-                        final String customName = dynamic.get("CustomName").asString("");
+-                        if (customName.isEmpty()) {
+-                            return dynamic.remove("CustomName");
+-                        }
+-                        return dynamic.set("CustomName", LegacyComponentDataFixUtils.createPlainTextComponent(dynamic.getOps(), customName));
+-                    });
+-                });
+-            }
+-        });
+-        // CraftBukkit end
+         builder.addFixer(new EntityCustomNameToComponentFix(schema45));
+         builder.addFixer(new ItemCustomNameToComponentFix(schema45));
+         builder.addFixer(new BlockEntityCustomNameToComponentFix(schema45));
+-- 
+2.49.0.windows.1
+
