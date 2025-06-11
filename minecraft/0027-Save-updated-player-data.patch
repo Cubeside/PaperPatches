@@ -1,6 +1,6 @@
-From 1c48c674eb3f6dc5e50b33dde41db958672d029a Mon Sep 17 00:00:00 2001
+From 6a466978115be88bb672284e7241bd651be600d8 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
-Date: Tue, 27 May 2025 00:58:20 +0200
+Date: Wed, 11 Jun 2025 06:36:36 +0200
 Subject: [PATCH] Save updated player data
 
 ---
@@ -8,15 +8,15 @@ Subject: [PATCH] Save updated player data
  1 file changed, 16 insertions(+)
 
 diff --git a/net/minecraft/world/level/storage/PlayerDataStorage.java b/net/minecraft/world/level/storage/PlayerDataStorage.java
-index ab9282c..22398d2 100644
+index fe44d8d..9feb856 100644
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
-@@ -115,6 +115,22 @@ public class PlayerDataStorage {
+@@ -118,6 +118,22 @@ public class PlayerDataStorage {
+         return optional.or(() -> this.load(name, uuid, ".dat_old")).map(compoundTag -> { // CraftBukkit
              int dataVersion = NbtUtils.getDataVersion(compoundTag, -1);
-             compoundTag = DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, compoundTag, dataVersion);
-             // player.load(compoundTag); // CraftBukkit - handled above
+             compoundTag = ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, compoundTag, dataVersion, ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion()); // Paper - rewrite data conversion system
 +            // Brokko start - save updated player data
-+            if (dataVersion != net.minecraft.SharedConstants.getCurrentVersion().getDataVersion().getVersion()) {
++            if (dataVersion != ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion()) {
 +                LOGGER.info("Saving updated player data for {}", uuid);
 +                NbtUtils.addCurrentDataVersion(compoundTag);
 +                try {
@@ -31,7 +31,7 @@ index ab9282c..22398d2 100644
 +                }
 +            }
 +            // Brokko end
-             return compoundTag;
+             return compoundTag; // CraftBukkit - handled above
          });
      }
 -- 
