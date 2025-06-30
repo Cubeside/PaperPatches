@@ -1,6 +1,6 @@
-From 7110ddbbd8ebd0208628909b21ef7e1b3536b0ef Mon Sep 17 00:00:00 2001
+From eef53e429d9fe7b61d30b363c01444f178b2395a Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
-Date: Wed, 25 Jun 2025 04:20:31 +0200
+Date: Mon, 30 Jun 2025 21:53:26 +0200
 Subject: [PATCH] currentPacketHandledPlayer in ServerGamePacketListenerImpl
 
 ---
@@ -8,18 +8,18 @@ Subject: [PATCH] currentPacketHandledPlayer in ServerGamePacketListenerImpl
  1 file changed, 2 insertions(+)
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index aeb4390..a84db99 100644
+index 04c9919..5e324d0 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -312,6 +312,7 @@ public class ServerGamePacketListenerImpl
-     private boolean waitingForSwitchToConfig;
-     private static final int MAX_SIGN_LINE_LENGTH = Integer.getInteger("Paper.maxSignLength", 80); // Paper - Limit client sign length
-     private final io.papermc.paper.event.packet.ClientTickEndEvent tickEndEvent; // Paper - add client tick end event
+@@ -301,6 +301,7 @@ public class ServerGamePacketListenerImpl
+     private float lastYaw = Float.MAX_VALUE;
+     private boolean justTeleported = false;
+     // CraftBukkit end
 +    private static final ThreadLocal<java.util.UUID> currentPacketHandledPlayer = new ThreadLocal<>(); // Brokko - currentPacketHandledPlayer
- 
-     public ServerGamePacketListenerImpl(MinecraftServer server, Connection connection, ServerPlayer player, CommonListenerCookie cookie) {
-         super(server, connection, cookie, player); // CraftBukkit
-@@ -419,6 +420,7 @@ public class ServerGamePacketListenerImpl
+     @Nullable
+     private RemoteChatSession chatSession;
+     private boolean hasLoggedExpiry = false; // Paper - Prevent causing expired keys from impacting new joins
+@@ -421,6 +422,7 @@ public class ServerGamePacketListenerImpl
  
      @Override
      public boolean shouldHandleMessage(Packet<?> packet) {
