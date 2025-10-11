@@ -1,39 +1,42 @@
-From 6a466978115be88bb672284e7241bd651be600d8 Mon Sep 17 00:00:00 2001
+From c6deebb7ac9c1774ace3e04e170d9f45a7ffdf56 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Wed, 11 Jun 2025 06:36:36 +0200
 Subject: [PATCH] Save updated player data
 
 ---
- .../world/level/storage/PlayerDataStorage.java   | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ .../level/storage/PlayerDataStorage.java      | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/net/minecraft/world/level/storage/PlayerDataStorage.java b/net/minecraft/world/level/storage/PlayerDataStorage.java
-index fe44d8d..9feb856 100644
+index 02f72bf..eab1a56 100644
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
-@@ -118,6 +118,22 @@ public class PlayerDataStorage {
-         return optional.or(() -> this.load(name, uuid, ".dat_old")).map(compoundTag -> { // CraftBukkit
+@@ -100,7 +100,24 @@ public class PlayerDataStorage {
+ 
+         return optional.or(() -> this.load(nameAndId, ".dat_old")).map(compoundTag -> {
              int dataVersion = NbtUtils.getDataVersion(compoundTag, -1);
-             compoundTag = ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, compoundTag, dataVersion, ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion()); // Paper - rewrite data conversion system
+-            return ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, compoundTag, dataVersion, ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion()); // Paper - rewrite data conversion system
++            compoundTag = ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, compoundTag, dataVersion, ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion()); // Paper - rewrite data conversion system
 +            // Brokko start - save updated player data
 +            if (dataVersion != ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion()) {
-+                LOGGER.info("Saving updated player data for {}", uuid);
++                LOGGER.info("Saving updated player data for {}", nameAndId.id().toString());
 +                NbtUtils.addCurrentDataVersion(compoundTag);
 +                try {
 +                    Path path = getPlayerDir().toPath();
-+                    Path path1 = Files.createTempFile(path, uuid + "-", ".dat");
++                    Path path1 = Files.createTempFile(path, nameAndId.id().toString() + "-", ".dat");
 +                    NbtIo.writeCompressed(compoundTag, path1);
-+                    Path path2 = path.resolve(uuid + ".dat");
-+                    Path path3 = path.resolve(uuid + ".dat_old");
++                    Path path2 = path.resolve(nameAndId.id().toString() + ".dat");
++                    Path path3 = path.resolve(nameAndId.id().toString() + ".dat_old");
 +                    Util.safeReplaceFile(path2, path1, path3);
 +                } catch (Exception ex) {
-+                    LOGGER.warn("Failed to save player data for {}", uuid, ex);
++                    LOGGER.warn("Failed to save player data for {}", nameAndId.id().toString(), ex);
 +                }
 +            }
 +            // Brokko end
-             return compoundTag; // CraftBukkit - handled above
++            return compoundTag; // CraftBukkit - handled above
          });
      }
+ 
 -- 
-2.49.0.windows.1
+2.50.1.windows.1
 

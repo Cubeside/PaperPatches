@@ -1,4 +1,4 @@
-From 495508d781f4ba809746afb587c471bbcf453ec9 Mon Sep 17 00:00:00 2001
+From 125b81d31e6f8b4cd2830897892f433549beb408 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Wed, 4 Jun 2025 00:45:29 +0200
 Subject: [PATCH] Do not log message, if mojang api player lookup failed
@@ -8,12 +8,12 @@ Subject: [PATCH] Do not log message, if mojang api player lookup failed
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/com/mojang/authlib/yggdrasil/YggdrasilGameProfileRepository.java b/com/mojang/authlib/yggdrasil/YggdrasilGameProfileRepository.java
-index 02717d3..367faed 100644
+index cdab6cc..ef0ea26 100644
 --- a/com/mojang/authlib/yggdrasil/YggdrasilGameProfileRepository.java
 +++ b/com/mojang/authlib/yggdrasil/YggdrasilGameProfileRepository.java
-@@ -115,7 +115,7 @@ public class YggdrasilGameProfileRepository implements GameProfileRepository {
+@@ -116,7 +116,7 @@ public class YggdrasilGameProfileRepository implements GameProfileRepository {
          try {
-             return Optional.ofNullable(client.get(HttpAuthenticationService.constantURL(nameLookupUrl + normalizeName(name)), GameProfile.class));
+             return Optional.ofNullable(client.get(HttpAuthenticationService.constantURL(nameLookupUrl + normalizeName(name)), NameAndId.class));
          } catch (final MinecraftClientException e) {
 -            LOGGER.warn("Couldn't find profile with name: {}", name, e);
 +            // LOGGER.warn("Couldn't find profile with name: {}", name, e); // Brokko - no logging needed
@@ -21,5 +21,5 @@ index 02717d3..367faed 100644
          }
      }
 -- 
-2.49.0.windows.1
+2.50.1.windows.1
 
