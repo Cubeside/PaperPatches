@@ -1,0 +1,28 @@
+From 7e0e8b1ed1fef75f71f6dd6b18f108f4cd682d10 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Sun, 23 Nov 2025 04:54:17 +0100
+Subject: [PATCH] Fix crash when explosion has no powner
+
+---
+ net/minecraft/world/level/ServerExplosion.java | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
+index 1c521f9..b08e767 100644
+--- a/net/minecraft/world/level/ServerExplosion.java
++++ b/net/minecraft/world/level/ServerExplosion.java
+@@ -478,6 +478,11 @@ public class ServerExplosion implements Explosion {
+     }
+ 
+     private void hurtEntities() {
++        // Paper start - fix crash when explosion has no power
++        if (this.radius <= 0) {
++            return;
++        }
++        // Paper end - fix crash when explosion has no power
+         float f = this.radius * 2.0F;
+         int floor = Mth.floor(this.center.x - f - 1.0);
+         int floor1 = Mth.floor(this.center.x + f + 1.0);
+-- 
+2.50.1.windows.1
+
