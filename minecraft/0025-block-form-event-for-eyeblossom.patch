@@ -1,4 +1,4 @@
-From 62130484050dcfdc0b5bac217f9e4eedd9c584b9 Mon Sep 17 00:00:00 2001
+From 680172121c323b564fb94954e0227ed8b1a90301 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Sun, 23 Mar 2025 04:09:31 +0100
 Subject: [PATCH] block form event for eyeblossom
@@ -9,7 +9,7 @@ Subject: [PATCH] block form event for eyeblossom
  2 files changed, 12 insertions(+), 5 deletions(-)
 
 diff --git a/net/minecraft/world/level/block/EyeblossomBlock.java b/net/minecraft/world/level/block/EyeblossomBlock.java
-index 25391f5..86ea987 100644
+index c675bf9e..36c128c4 100644
 --- a/net/minecraft/world/level/block/EyeblossomBlock.java
 +++ b/net/minecraft/world/level/block/EyeblossomBlock.java
 @@ -83,7 +83,11 @@ public class EyeblossomBlock extends FlowerBlock {
@@ -26,13 +26,13 @@ index 25391f5..86ea987 100644
              type.spawnTransformParticle(level, pos, random);
              BlockPos.betweenClosed(pos.offset(-3, -2, -3), pos.offset(3, 2, 3)).forEach(checkPos -> {
 diff --git a/net/minecraft/world/level/block/FlowerPotBlock.java b/net/minecraft/world/level/block/FlowerPotBlock.java
-index 79014b0..ecf97ea 100644
+index b9cd84b1..56b3b223 100644
 --- a/net/minecraft/world/level/block/FlowerPotBlock.java
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
-@@ -159,10 +159,13 @@ public class FlowerPotBlock extends Block {
+@@ -160,10 +160,13 @@ public class FlowerPotBlock extends Block {
              boolean flag = this.potted == Blocks.OPEN_EYEBLOSSOM;
-             boolean isNaturalNight = CreakingHeartBlock.isNaturalNight(level);
-             if (flag != isNaturalNight) {
+             boolean flag1 = level.environmentAttributes().getValue(EnvironmentAttributes.EYEBLOSSOM_OPEN, pos).toBoolean(flag);
+             if (flag != flag1) {
 -                level.setBlock(pos, this.opposite(state), Block.UPDATE_ALL);
 -                EyeblossomBlock.Type type = EyeblossomBlock.Type.fromBoolean(flag).transform();
 -                type.spawnTransformParticle(level, pos, random);

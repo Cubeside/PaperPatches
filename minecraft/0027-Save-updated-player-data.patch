@@ -1,4 +1,4 @@
-From c6deebb7ac9c1774ace3e04e170d9f45a7ffdf56 Mon Sep 17 00:00:00 2001
+From 7664e15dcd258cae22cf0ec3d81d07f096224bf9 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Wed, 11 Jun 2025 06:36:36 +0200
 Subject: [PATCH] Save updated player data
@@ -8,15 +8,15 @@ Subject: [PATCH] Save updated player data
  1 file changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/net/minecraft/world/level/storage/PlayerDataStorage.java b/net/minecraft/world/level/storage/PlayerDataStorage.java
-index 02f72bf..eab1a56 100644
+index 4ce07e19..2babfd03 100644
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
-@@ -100,7 +100,24 @@ public class PlayerDataStorage {
+@@ -98,7 +98,24 @@ public class PlayerDataStorage {
  
          return optional.or(() -> this.load(nameAndId, ".dat_old")).map(compoundTag -> {
-             int dataVersion = NbtUtils.getDataVersion(compoundTag, -1);
--            return ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, compoundTag, dataVersion, ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion()); // Paper - rewrite data conversion system
-+            compoundTag = ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, compoundTag, dataVersion, ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion()); // Paper - rewrite data conversion system
+             int dataVersion = NbtUtils.getDataVersion(compoundTag);
+-            return DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, compoundTag, dataVersion);
++            compoundTag = DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, compoundTag, dataVersion);
 +            // Brokko start - save updated player data
 +            if (dataVersion != ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion()) {
 +                LOGGER.info("Saving updated player data for {}", nameAndId.id().toString());

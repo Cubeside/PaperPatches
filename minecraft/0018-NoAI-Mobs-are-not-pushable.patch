@@ -1,17 +1,17 @@
-From c646eef058e6452c59cb94127580bb6172295e31 Mon Sep 17 00:00:00 2001
+From ca83c94c167ff5c432fda28003b8d6e69fd7432e Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Thu, 9 Jan 2025 09:01:31 +0100
-Subject: [PATCH 1/3] NoAI Mobs are not pushable
+Subject: [PATCH] NoAI Mobs are not pushable
 
 ---
  net/minecraft/world/entity/Entity.java | 22 ++++++++++++++++++++--
  1 file changed, 20 insertions(+), 2 deletions(-)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 1d0151a..e3d1340 100644
+index ad432295..1d896a64 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -2157,6 +2157,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2288,6 +2288,12 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      public void playerTouch(Player player) {
      }
  
@@ -24,7 +24,7 @@ index 1d0151a..e3d1340 100644
      public void push(Entity entity) {
          if (!this.isPassengerOfSameVehicle(entity)) {
              if (!entity.noPhysics && !this.noPhysics) {
-@@ -2178,11 +2184,23 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2309,11 +2315,23 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
                      d *= 0.05F;
                      d1 *= 0.05F;
                      if (!this.isVehicle() && this.isPushable()) {
@@ -33,7 +33,7 @@ index 1d0151a..e3d1340 100644
 +                        if (this.isRealPushable()) {
 +                            this.push(-d, 0.0, -d1);
 +                        } else {
-+                            this.hasImpulse = true;
++                            this.needsSync = true;
 +                        }
 +                        //Brokko end
                      }
@@ -44,12 +44,12 @@ index 1d0151a..e3d1340 100644
 +                        if (entity.isRealPushable()) {
 +                            entity.push(d, 0.0D, d1);
 +                        } else {
-+                            entity.hasImpulse = true;
++                            entity.needsSync = true;
 +                        }
 +                        //Brokko end
                      }
                  }
              }
 -- 
-2.32.0.windows.1
+2.50.1.windows.1
 
