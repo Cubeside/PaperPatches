@@ -1,4 +1,4 @@
-From 7664e15dcd258cae22cf0ec3d81d07f096224bf9 Mon Sep 17 00:00:00 2001
+From 1fbb7b531fdd5915438670079f9a1b5d66c61ecd Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Wed, 11 Jun 2025 06:36:36 +0200
 Subject: [PATCH] Save updated player data
@@ -8,7 +8,7 @@ Subject: [PATCH] Save updated player data
  1 file changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/net/minecraft/world/level/storage/PlayerDataStorage.java b/net/minecraft/world/level/storage/PlayerDataStorage.java
-index 4ce07e19..2babfd03 100644
+index 4ce07e19..7e902b78 100644
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
 @@ -98,7 +98,24 @@ public class PlayerDataStorage {
@@ -18,7 +18,7 @@ index 4ce07e19..2babfd03 100644
 -            return DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, compoundTag, dataVersion);
 +            compoundTag = DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, compoundTag, dataVersion);
 +            // Brokko start - save updated player data
-+            if (dataVersion != ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion()) {
++            if (dataVersion != net.minecraft.SharedConstants.getCurrentVersion().dataVersion().version()) {
 +                LOGGER.info("Saving updated player data for {}", nameAndId.id().toString());
 +                NbtUtils.addCurrentDataVersion(compoundTag);
 +                try {
