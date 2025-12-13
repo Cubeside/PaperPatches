@@ -1,4 +1,4 @@
-From 1fbb7b531fdd5915438670079f9a1b5d66c61ecd Mon Sep 17 00:00:00 2001
+From cfe3acac95d7dec8d0b747b5739f4a67228f2edd Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Wed, 11 Jun 2025 06:36:36 +0200
 Subject: [PATCH] Save updated player data
@@ -8,15 +8,15 @@ Subject: [PATCH] Save updated player data
  1 file changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/net/minecraft/world/level/storage/PlayerDataStorage.java b/net/minecraft/world/level/storage/PlayerDataStorage.java
-index 4ce07e19..7e902b78 100644
+index b8ef50b..00766c5 100644
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
 @@ -98,7 +98,24 @@ public class PlayerDataStorage {
  
          return optional.or(() -> this.load(nameAndId, ".dat_old")).map(compoundTag -> {
              int dataVersion = NbtUtils.getDataVersion(compoundTag);
--            return DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, compoundTag, dataVersion);
-+            compoundTag = DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, compoundTag, dataVersion);
+-            return ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, compoundTag, dataVersion, ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion());
++            compoundTag = ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, compoundTag, dataVersion, ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion());
 +            // Brokko start - save updated player data
 +            if (dataVersion != net.minecraft.SharedConstants.getCurrentVersion().dataVersion().version()) {
 +                LOGGER.info("Saving updated player data for {}", nameAndId.id().toString());
