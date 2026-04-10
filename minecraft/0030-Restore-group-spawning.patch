@@ -1,4 +1,4 @@
-From 100b5e90f26a9622e85b13ad9eef5657d0422c82 Mon Sep 17 00:00:00 2001
+From 8a5e5b958878831437174bf44b15e43ce14484e8 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Sun, 28 Dec 2025 07:16:26 +0100
 Subject: [PATCH] Restore group spawning
@@ -8,15 +8,15 @@ Subject: [PATCH] Restore group spawning
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index 4e507849..f3a0849a 100644
+index 427573fc..b12c6d5e 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -317,7 +317,7 @@ public final class NaturalSpawner {
+@@ -342,7 +342,7 @@ public final class NaturalSpawner {
                                          // Paper end - Optional per player mob spawns
                                      }
                                      // CraftBukkit end
--                                    if (i >= mobForSpawn.getMaxSpawnClusterSize() || i >= maxSpawns) { // Paper - Optional per player mob spawns
-+                                    if (i >= mobForSpawn.getMaxSpawnClusterSize()/* || i >= maxSpawns*/) { // Paper - Optional per player mob spawns // Brokko - Restore group spawning
+-                                    if (clusterSize >= maxSpawns || clusterSize >= mob.getMaxSpawnClusterSize()) { // Paper - Optional per player mob spawns
++                                    if (/* clusterSize >= maxSpawns || */ clusterSize >= mob.getMaxSpawnClusterSize()) { // Paper - Optional per player mob spawns // Brokko - Restore group spawning
                                          return;
                                      }
  

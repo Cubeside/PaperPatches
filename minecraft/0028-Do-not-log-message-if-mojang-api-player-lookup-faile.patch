@@ -1,4 +1,4 @@
-From aa5cfe3b8f2086e100246a2a18d0c5273ca112bf Mon Sep 17 00:00:00 2001
+From e95d300e9b997dc6a0359e2c2df3a65b56456e91 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Wed, 4 Jun 2025 00:45:29 +0200
 Subject: [PATCH] Do not log message, if mojang api player lookup failed

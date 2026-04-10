@@ -1,4 +1,4 @@
-From d803d0503bbe85fc92e4843ea6e20ceef4d3ba4e Mon Sep 17 00:00:00 2001
+From 21ac41605ea2e28c6ee359b00a2505c8b7f66f99 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Mon, 30 Jun 2025 21:53:26 +0200
 Subject: [PATCH] currentPacketHandledPlayer in ServerGamePacketListenerImpl
@@ -8,10 +8,10 @@ Subject: [PATCH] currentPacketHandledPlayer in ServerGamePacketListenerImpl
  1 file changed, 2 insertions(+)
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index ad4d20dd..36319384 100644
+index d7d5a1b1..165ad167 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -307,6 +307,7 @@ public class ServerGamePacketListenerImpl
+@@ -315,6 +315,7 @@ public class ServerGamePacketListenerImpl
      private float lastYaw = Float.MAX_VALUE;
      private boolean justTeleported = false;
      // CraftBukkit end
@@ -19,10 +19,10 @@ index ad4d20dd..36319384 100644
      private @Nullable RemoteChatSession chatSession;
      private boolean hasLoggedExpiry = false; // Paper - Prevent causing expired keys from impacting new joins
      private SignedMessageChain.Decoder signedMessageDecoder;
-@@ -452,6 +453,7 @@ public class ServerGamePacketListenerImpl
+@@ -461,6 +462,7 @@ public class ServerGamePacketListenerImpl
  
      @Override
-     public boolean shouldHandleMessage(Packet<?> packet) {
+     public boolean shouldHandleMessage(final Packet<?> packet) {
 +        currentPacketHandledPlayer.set(this.player.getUUID()); // Brokko - currentPacketHandledPlayer
          return super.shouldHandleMessage(packet)
              || this.waitingForSwitchToConfig && this.connection.isConnected() && packet instanceof ServerboundConfigurationAcknowledgedPacket;

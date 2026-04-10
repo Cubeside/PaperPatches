@@ -1,4 +1,4 @@
-From 63d34494299909e7eb618b7dce7024f6b85de446 Mon Sep 17 00:00:00 2001
+From baca677ee9837813f9c630679f712cf17fb8dda9 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Sun, 20 Apr 2025 04:37:12 +0200
 Subject: [PATCH] Always call PlayerMoveEvent when a player moves
@@ -8,10 +8,10 @@ Subject: [PATCH] Always call PlayerMoveEvent when a player moves
  1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index f49a2c1..5d0e1cd 100644
+index 4a1146cc..d7d5a1b1 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -614,10 +614,12 @@ public class ServerGamePacketListenerImpl
+@@ -683,10 +683,12 @@ public class ServerGamePacketListenerImpl
                  Location to = CraftLocation.toBukkit(packet.position(), player.getWorld(), packet.yRot(), packet.xRot());
  
                  // Prevent 40 event-calls for less than a single pixel of movement >.>
@@ -28,5 +28,5 @@ index f49a2c1..5d0e1cd 100644
                      this.lastPosY = to.getY();
                      this.lastPosZ = to.getZ();
 -- 
-2.32.0.windows.1
+2.50.1.windows.1
 

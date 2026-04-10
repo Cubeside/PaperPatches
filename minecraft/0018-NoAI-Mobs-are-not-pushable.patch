@@ -1,4 +1,4 @@
-From ca83c94c167ff5c432fda28003b8d6e69fd7432e Mon Sep 17 00:00:00 2001
+From 4409efaf65e96ab66e29898f54e280ce7728275c Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Thu, 9 Jan 2025 09:01:31 +0100
 Subject: [PATCH] NoAI Mobs are not pushable
@@ -8,11 +8,11 @@ Subject: [PATCH] NoAI Mobs are not pushable
  1 file changed, 20 insertions(+), 2 deletions(-)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index ad432295..1d896a64 100644
+index 9cd46a86..2bcbd1d3 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -2288,6 +2288,12 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
-     public void playerTouch(Player player) {
+@@ -2308,6 +2308,12 @@ public abstract class Entity
+     public void playerTouch(final Player player) {
      }
  
 +    // Brokko start - pushable
@@ -21,32 +21,32 @@ index ad432295..1d896a64 100644
 +    }
 +    // Brokko end
 +
-     public void push(Entity entity) {
+     public void push(final Entity entity) {
          if (!this.isPassengerOfSameVehicle(entity)) {
              if (!entity.noPhysics && !this.noPhysics) {
-@@ -2309,11 +2315,23 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
-                     d *= 0.05F;
-                     d1 *= 0.05F;
+@@ -2329,11 +2335,23 @@ public abstract class Entity
+                     xa *= 0.05F;
+                     za *= 0.05F;
                      if (!this.isVehicle() && this.isPushable()) {
--                        this.push(-d, 0.0, -d1);
-+                        //Brokko start - isRealPushable
+-                        this.push(-xa, 0.0, -za);
++                        // Brokko start - isRealPushable
 +                        if (this.isRealPushable()) {
-+                            this.push(-d, 0.0, -d1);
++                            this.push(-xa, 0.0, -za);
 +                        } else {
 +                            this.needsSync = true;
 +                        }
-+                        //Brokko end
++                        // Brokko end
                      }
  
                      if (!entity.isVehicle() && entity.isPushable()) {
--                        entity.push(d, 0.0, d1);
-+                        //Brokko start - isRealPushable
+-                        entity.push(xa, 0.0, za);
++                        // Brokko start - isRealPushable
 +                        if (entity.isRealPushable()) {
-+                            entity.push(d, 0.0D, d1);
++                            entity.push(xa, 0.0D, za);
 +                        } else {
 +                            entity.needsSync = true;
 +                        }
-+                        //Brokko end
++                        // Brokko end
                      }
                  }
              }

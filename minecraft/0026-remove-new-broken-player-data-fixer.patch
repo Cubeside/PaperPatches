@@ -1,4 +1,4 @@
-From 12df711c315fd935457359becafd240cb158012d Mon Sep 17 00:00:00 2001
+From 4272a822aa891bf7602f90ce969c59860c294f4f Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Sun, 1 Jun 2025 06:26:10 +0200
 Subject: [PATCH] remove new broken player data fixer
@@ -8,17 +8,17 @@ Subject: [PATCH] remove new broken player data fixer
  1 file changed, 18 deletions(-)
 
 diff --git a/net/minecraft/util/datafix/DataFixers.java b/net/minecraft/util/datafix/DataFixers.java
-index 650f8e2..4bb7b44 100644
+index ecbb49a9..ab0d89de 100644
 --- a/net/minecraft/util/datafix/DataFixers.java
 +++ b/net/minecraft/util/datafix/DataFixers.java
-@@ -541,24 +541,6 @@ public class DataFixers {
-         Schema schema44 = builder.addSchema(1456, SAME_NAMESPACED);
-         builder.addFixer(new EntityItemFrameDirectionFix(schema44, false));
-         Schema schema45 = builder.addSchema(1458, V1458::new);
+@@ -549,24 +549,6 @@ public class DataFixers {
+         Schema v1456 = fixerUpper.addSchema(1456, SAME_NAMESPACED);
+         fixerUpper.addFixer(new EntityItemFrameDirectionFix(v1456, false));
+         Schema v1458 = fixerUpper.addSchema(1458, V1458::new);
 -        // CraftBukkit start
 -        // API allows setting player custom names, so we need to convert them.
 -        // This does *not* handle upgrades in any other version, but generally those shouldn't need conversion.
--        builder.addFixer(new DataFix(schema45, false) {
+-        fixerUpper.addFixer(new DataFix(v1458, false) {
 -            @Override
 -            protected TypeRewriteRule makeRule() {
 -                return this.fixTypeEverywhereTyped("Player CustomName", this.getInputSchema().getType(References.PLAYER), typed -> {
@@ -33,9 +33,9 @@ index 650f8e2..4bb7b44 100644
 -            }
 -        });
 -        // CraftBukkit end
-         builder.addFixer(new EntityCustomNameToComponentFix(schema45));
-         builder.addFixer(new ItemCustomNameToComponentFix(schema45));
-         builder.addFixer(new BlockEntityCustomNameToComponentFix(schema45));
+         fixerUpper.addFixer(new EntityCustomNameToComponentFix(v1458));
+         fixerUpper.addFixer(new ItemCustomNameToComponentFix(v1458));
+         fixerUpper.addFixer(new BlockEntityCustomNameToComponentFix(v1458));
 -- 
-2.49.0.windows.1
+2.50.1.windows.1
 

@@ -1,17 +1,17 @@
-From 68d833c0049f45c9e1461d14cbfebf0ed89c9023 Mon Sep 17 00:00:00 2001
+From 0dab1f4629fd68e3fdbab893a65f810a1dec27bf Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Thu, 9 Jan 2025 07:57:45 +0100
-Subject: [PATCH 3/3] Avoid sync io
+Subject: [PATCH] Avoid sync io
 
 ---
  net/minecraft/nbt/NbtIo.java | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/minecraft/nbt/NbtIo.java b/net/minecraft/nbt/NbtIo.java
-index c8eb368..07d9386 100644
+index e5d7a094..8cf4b225 100644
 --- a/net/minecraft/nbt/NbtIo.java
 +++ b/net/minecraft/nbt/NbtIo.java
-@@ -24,7 +24,7 @@ import net.minecraft.util.FastBufferedInputStream;
+@@ -25,7 +25,7 @@ import org.jspecify.annotations.Nullable;
  
  public class NbtIo {
      private static final OpenOption[] SYNC_OUTPUT_OPTIONS = new OpenOption[]{
@@ -19,7 +19,7 @@ index c8eb368..07d9386 100644
 +        StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING // Brokko
      };
  
-     public static CompoundTag readCompressed(Path path, NbtAccounter accounter) throws IOException {
+     public static CompoundTag readCompressed(final Path file, final NbtAccounter accounter) throws IOException {
 -- 
-2.32.0.windows.1
+2.50.1.windows.1
 
