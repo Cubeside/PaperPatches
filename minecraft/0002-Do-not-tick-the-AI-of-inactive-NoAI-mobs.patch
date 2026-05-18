@@ -1,4 +1,4 @@
-From f717f192cc4131ca7649965ecd324ce46dde91d2 Mon Sep 17 00:00:00 2001
+From 4d1308906dd1ae408fee67409661ef770dc33502 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Thu, 9 Jan 2025 07:55:13 +0100
 Subject: [PATCH] Do not tick the AI of inactive NoAI mobs
@@ -8,13 +8,13 @@ Subject: [PATCH] Do not tick the AI of inactive NoAI mobs
  1 file changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 90eaa775..444029be 100644
+index 5bbb5cb..bc2e0d7 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -215,12 +215,16 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
-     @Override
+@@ -216,12 +216,16 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
      public void inactiveTick() {
          super.inactiveTick();
+         if (!this.aware) return; // Paper - Do not tick AI for inactive unaware mobs
 -        if (this.goalSelector.inactiveTick()) {
 -            this.goalSelector.tick();
 -        }
