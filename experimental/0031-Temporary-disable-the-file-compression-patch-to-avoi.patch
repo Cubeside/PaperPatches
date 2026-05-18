@@ -1,0 +1,31 @@
+From 836c941eaf853a50068a1d793e5a300c55c42bad Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Sat, 11 Apr 2026 06:14:15 +0200
+Subject: [PATCH] Temporary disable the file compression patch to avoid crash
+ on startup
+
+---
+ .../world/level/chunk/storage/RegionFileVersion.java       | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/net/minecraft/world/level/chunk/storage/RegionFileVersion.java b/net/minecraft/world/level/chunk/storage/RegionFileVersion.java
+index 11b65c68..0b74f080 100644
+--- a/net/minecraft/world/level/chunk/storage/RegionFileVersion.java
++++ b/net/minecraft/world/level/chunk/storage/RegionFileVersion.java
+@@ -51,12 +51,7 @@ public class RegionFileVersion {
+ 
+     // Paper start - Configurable region compression format
+     public static RegionFileVersion getCompressionFormat() {
+-        return switch (io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.compressionFormat) {
+-            case GZIP -> VERSION_GZIP;
+-            case ZLIB -> VERSION_DEFLATE;
+-            case LZ4 -> VERSION_LZ4;
+-            case NONE -> VERSION_NONE;
+-        };
++        return VERSION_DEFLATE; // brokko
+     }
+     // Paper end - Configurable region compression format
+     private RegionFileVersion(
+-- 
+2.50.1.windows.1
+
