@@ -1,0 +1,26 @@
+From f725e632c35136024c8e007de0c5e4e9594565e2 Mon Sep 17 00:00:00 2001
+From: Brokkonaut <hannos17@gmx.de>
+Date: Sat, 6 Jun 2026 20:39:12 +0200
+Subject: [PATCH] Do not send height limit message when awaiting teleport
+ confirm
+
+---
+ net/minecraft/server/network/ServerGamePacketListenerImpl.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 810b3525..07c19bc2 100644
+--- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -2187,7 +2187,7 @@ public class ServerGamePacketListenerImpl
+                                     this.player.containerMenu.forceHeldSlot(hand);
+                                 }
+                             // Paper end - Fix inventory desync
+-                            } else {
++                            } else if (this.awaitingPositionFromClient == null) { // brokko - no message if awaiting position
+                                 this.player.sendBuildLimitMessage(true, maxY);
+                             }
+ 
+-- 
+2.50.1.windows.1
+
