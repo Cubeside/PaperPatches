@@ -1,27 +1,24 @@
-From af2d01209307072ee00aa5ece014fdbbc2c448f0 Mon Sep 17 00:00:00 2001
+From daa3de2cca06253e4abe8c8137969217c1e17962 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
-Date: Sat, 4 Apr 2026 01:05:27 +0200
-Subject: [PATCH 2/2] fix missed protocol constants update
+Date: Wed, 17 Jun 2026 06:20:27 +0200
+Subject: [PATCH] fix missed protocol constants update
 
 ---
- protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 1c63c6ca..9d73ccf9 100644
+index b6779092..a86dcbbc 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -712,7 +712,9 @@ public enum Protocol
-             TO_SERVER.registerPacket(
+@@ -713,6 +713,7 @@ public enum Protocol
                      net.md_5.bungee.protocol.packet.ClientChatAcknowledgement.class,
                      net.md_5.bungee.protocol.packet.ClientChatAcknowledgement::new,
--                    map (ProtocolConstants.MINECRAFT_1_19_3, 0x3)
-+                    map (ProtocolConstants.MINECRAFT_1_19_3, 0x3),
+                     map (ProtocolConstants.MINECRAFT_1_19_3, 0x3),
 +                    map( ProtocolConstants.MINECRAFT_1_21_6, 0x05 ),
-+                    map( ProtocolConstants.MINECRAFT_26_1, 0x06 )
+                     map(ProtocolConstants.MINECRAFT_26_1, 0x6)
              );
              // Waterfall end
-             TO_SERVER.registerPacket(
 -- 
 2.50.1.windows.1
 
