@@ -1,6 +1,6 @@
-From 4ceb02d9c43cc82fa474ca1f1686c61000eb08a7 Mon Sep 17 00:00:00 2001
+From c0752cd9704f41960a53e7a0f1f3e2e7478b778e Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
-Date: Wed, 11 Jun 2025 06:36:36 +0200
+Date: Thu, 1 Oct 2026 10:20:06 +0200
 Subject: [PATCH] Save updated player data
 
 ---
@@ -8,16 +8,16 @@ Subject: [PATCH] Save updated player data
  1 file changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/net/minecraft/world/level/storage/PlayerDataStorage.java b/net/minecraft/world/level/storage/PlayerDataStorage.java
-index c5898bfb..3f8a996e 100644
+index 142a34eb..1430cbcc 100644
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
 @@ -98,7 +98,24 @@ public class PlayerDataStorage {
  
          return optTag.or(() -> this.load(nameAndId, ".dat_old")).map(tag -> {
              int version = NbtUtils.getDataVersion(tag);
--            return ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, tag, version, ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion());
-+            tag = ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, tag, version, ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion());
+-            return ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, DataFixTypes.PLAYER, tag, version, ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion());
 +            // Brokko start - save updated player data
++            tag = ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, tag, version, ca.spottedleaf.dataconverter.minecraft.util.Version.getCurrentVersion());
 +            if (version != net.minecraft.SharedConstants.getCurrentVersion().dataVersion().version()) {
 +                LOGGER.info("Saving updated player data for {}", nameAndId.id().toString());
 +                NbtUtils.addCurrentDataVersion(tag);

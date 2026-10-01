@@ -1,17 +1,17 @@
-From e95d300e9b997dc6a0359e2c2df3a65b56456e91 Mon Sep 17 00:00:00 2001
+From 9c3b43fedc3f90ee66ac23bf5ed2a8e4f767570b Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Wed, 4 Jun 2025 00:45:29 +0200
 Subject: [PATCH] Do not log message, if mojang api player lookup failed
 
 ---
- .../authlib/yggdrasil/YggdrasilGameProfileRepository.java       | 2 +-
+ .../authlib/services/MinecraftServicesProfileRepository.java    | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/com/mojang/authlib/yggdrasil/YggdrasilGameProfileRepository.java b/com/mojang/authlib/yggdrasil/YggdrasilGameProfileRepository.java
-index 74a2b3df..55bdacf0 100644
---- a/com/mojang/authlib/yggdrasil/YggdrasilGameProfileRepository.java
-+++ b/com/mojang/authlib/yggdrasil/YggdrasilGameProfileRepository.java
-@@ -122,7 +122,7 @@ public class YggdrasilGameProfileRepository implements GameProfileRepository {
+diff --git a/com/mojang/authlib/services/MinecraftServicesProfileRepository.java b/com/mojang/authlib/services/MinecraftServicesProfileRepository.java
+index 65adccd1..041010cf 100644
+--- a/com/mojang/authlib/services/MinecraftServicesProfileRepository.java
++++ b/com/mojang/authlib/services/MinecraftServicesProfileRepository.java
+@@ -117,7 +117,7 @@ public class MinecraftServicesProfileRepository implements GameProfileRepository
              } else if (net.minecraft.server.MinecraftServer.getServer().isDebugging()) {
                  LOGGER.warn("Couldn't find profile with name: {}", name, e);
              } else {

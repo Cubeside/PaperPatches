@@ -1,6 +1,6 @@
-From f5cb15d8716fc8911400ccc1ca4f6f4cf83c8ff4 Mon Sep 17 00:00:00 2001
+From 8256c1c23d43ddac54f5a8fd2c30e346029b6937 Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
-Date: Sun, 23 Mar 2025 04:09:31 +0100
+Date: Thu, 1 Oct 2026 10:16:14 +0200
 Subject: [PATCH] block form event for eyeblossom
 
 ---
@@ -9,14 +9,14 @@ Subject: [PATCH] block form event for eyeblossom
  2 files changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/net/minecraft/world/level/block/EyeblossomBlock.java b/net/minecraft/world/level/block/EyeblossomBlock.java
-index b6ad3bdb..b3059835 100644
+index 8e920d01..2969c171 100644
 --- a/net/minecraft/world/level/block/EyeblossomBlock.java
 +++ b/net/minecraft/world/level/block/EyeblossomBlock.java
-@@ -83,7 +83,11 @@ public class EyeblossomBlock extends FlowerBlock {
+@@ -72,7 +72,11 @@ public class EyeblossomBlock extends FlowerBlock {
          }
  
          EyeblossomBlock.Type newType = this.type.transform();
--        level.setBlock(pos, newType.state(), Block.UPDATE_ALL);
+-        level.setBlockAndUpdate(pos, newType.state());
 +        // Brokko start - BlockFormEvent
 +        if (!org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(level, pos, newType.state(), Block.UPDATE_ALL)) {
 +            return false;
@@ -24,16 +24,16 @@ index b6ad3bdb..b3059835 100644
 +        // Brokko end
          level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
          newType.spawnTransformParticle(level, pos, random);
-         BlockPos.betweenClosed(pos.offset(-3, -2, -3), pos.offset(3, 2, 3)).forEach(nearby -> {
+         BlockPos minPos = pos.offset(-3, -2, -3);
 diff --git a/net/minecraft/world/level/block/FlowerPotBlock.java b/net/minecraft/world/level/block/FlowerPotBlock.java
-index 63e26b3d..beba6fc1 100644
+index ba7278eb..e598cfeb 100644
 --- a/net/minecraft/world/level/block/FlowerPotBlock.java
 +++ b/net/minecraft/world/level/block/FlowerPotBlock.java
-@@ -169,10 +169,13 @@ public class FlowerPotBlock extends Block {
+@@ -159,10 +159,13 @@ public class FlowerPotBlock extends Block {
              boolean isOpen = this.potted == Blocks.OPEN_EYEBLOSSOM;
              boolean shouldBeOpen = level.environmentAttributes().getValue(EnvironmentAttributes.EYEBLOSSOM_OPEN, pos).toBoolean(isOpen);
              if (isOpen != shouldBeOpen) {
--                level.setBlock(pos, this.opposite(state), Block.UPDATE_ALL);
+-                level.setBlockAndUpdate(pos, this.opposite(state));
 +                // Brokko start - BlockFormEvent
 +                if (org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(level, pos, this.opposite(state), Block.UPDATE_ALL)) {
                  EyeblossomBlock.Type newType = EyeblossomBlock.Type.fromBoolean(isOpen).transform();

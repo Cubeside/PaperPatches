@@ -1,27 +1,27 @@
-From 14a9076e246ef87388623577a88426453e625327 Mon Sep 17 00:00:00 2001
+From f9fcddede762cdee0d13aa3884cbde1a31e4fbad Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
-Date: Sun, 28 Jun 2026 06:05:10 +0200
-Subject: [PATCH 1/2] Always call PlayerMoveEvent when a player moves
+Date: Thu, 1 Oct 2026 08:16:37 +0200
+Subject: [PATCH] Always call PlayerMoveEvent when a player moves
 
 ---
  .../server/network/ServerGamePacketListenerImpl.java      | 8 +++++---
  1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index b9552a5a..1ef9296d 100644
+index ee52233d..3e03a937 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -685,10 +685,12 @@ public class ServerGamePacketListenerImpl
+@@ -696,10 +696,12 @@ public class ServerGamePacketListenerImpl
                  Location to = new Location(player.getWorld(), targetX, targetY, targetZ, targetYRot, targetXRot);
  
                  // Prevent 40 event-calls for less than a single pixel of movement >.>
 -                double delta = Mth.square(this.lastPosX - to.getX()) + Mth.square(this.lastPosY - to.getY()) + Mth.square(this.lastPosZ - to.getZ());
--                float deltaAngle = Math.abs(this.lastYRot - to.getYaw()) + Math.abs(this.lastXRot - to.getPitch());
+-                float deltaAngle = Math.abs(Mth.wrapDegrees(this.lastYRot - to.getYaw())) + Math.abs(this.lastXRot - to.getPitch());
 +                // Brokko start - Always call move event
 +                // double delta = Mth.square(this.lastPosX - to.getX()) + Mth.square(this.lastPosY - to.getY()) + Mth.square(this.lastPosZ - to.getZ());
-+                // float deltaAngle = Math.abs(this.lastYRot - to.getYaw()) + Math.abs(this.lastXRot - to.getPitch());
++                // float deltaAngle = Math.abs(Mth.wrapDegrees(this.lastYRot - to.getYaw())) + Math.abs(this.lastXRot - to.getPitch());
  
--                if ((delta > 1f / 256 || deltaAngle > 10f) && !this.player.isImmobile()) {
+-                if ((delta > 1.0F / 256 || deltaAngle > 10.0F) && !this.player.isImmobile()) {
 +                if (this.lastPosX != to.getX() || this.lastPosY != to.getY() || this.lastPosZ != to.getZ() || this.lastYRot != to.getYaw() || this.lastXRot != to.getPitch()) {
 +                    // Brokko end - Always call move event
                      this.lastPosX = to.getX();
