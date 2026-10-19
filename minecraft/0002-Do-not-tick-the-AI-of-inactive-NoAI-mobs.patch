@@ -1,38 +1,25 @@
-From 4d1308906dd1ae408fee67409661ef770dc33502 Mon Sep 17 00:00:00 2001
+From f867aec245452e62ba75bf2ac7ed52837b7fa32b Mon Sep 17 00:00:00 2001
 From: Brokkonaut <hannos17@gmx.de>
 Date: Thu, 9 Jan 2025 07:55:13 +0100
 Subject: [PATCH] Do not tick the AI of inactive NoAI mobs
 
 ---
- net/minecraft/world/entity/Mob.java | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ net/minecraft/world/entity/Mob.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 5bbb5cb..bc2e0d7 100644
+index 92ce15b2..466742f3 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -216,12 +216,16 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
+@@ -223,7 +223,7 @@ public abstract class Mob extends LivingEntity implements Targeting, EquipmentUs
+     @Override
      public void inactiveTick() {
          super.inactiveTick();
-         if (!this.aware) return; // Paper - Do not tick AI for inactive unaware mobs
--        if (this.goalSelector.inactiveTick()) {
--            this.goalSelector.tick();
--        }
--        if (this.targetSelector.inactiveTick()) {
--            this.targetSelector.tick();
-+        // Brokko start - isNoAi check
-+        if (!this.isNoAi()) {
-+            if (this.goalSelector.inactiveTick()) {
-+                this.goalSelector.tick();
-+            }
-+            if (this.targetSelector.inactiveTick()) {
-+                this.targetSelector.tick();
-+            }
-         }
-+        // Brokko end
-     }
-     // Paper end
- 
+-        if (!this.aware) return; // Paper - Do not tick AI for inactive unaware mobs
++        if (!this.aware || this.isNoAi()) return; // Paper - Do not tick AI for inactive unaware mobs // Brokko isNoAi check
+         final boolean isThrottled = this.level().paperConfig().entities.behavior.inactiveMobGoalSelectorThrottleRate.enabled() && inactiveTickDisableCounter++ % this.level().paperConfig().entities.behavior.inactiveMobGoalSelectorThrottleRate.intValue() != 0; // Paper - Throttle inactive goal selector ticking
+         if (this.goalSelector.inactiveTick() && !isThrottled) {
+             this.goalSelector.tick();
 -- 
 2.50.1.windows.1
 
